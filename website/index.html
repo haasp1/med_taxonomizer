@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Med Taxonomizer is an open pipeline for turning underused medical free-text fields into a reviewable, multi-level taxonomy and validated labels for analysis." />
+  <title>Med Taxonomizer: LLM taxonomy induction & classification for clinical free text</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #fbfaf7;
+      --paper-2: #f3efe7;
+      --ink: #101820;
+      --ink-2: #1d2733;
+      --muted: #5d6673;
+      --muted-2: #8a8f99;
+      --line: #e1dccf;
+      --line-strong: #a99d8d;
+      --blue: #123c69;
+      --blue-2: #0b2744;
+      --cyan: #2e8a99;
+      --clay: #b7643c;
+      --sage: #6f8162;
+      --gold: #c79a2a;
+      --crimson: #b03a48;
+      --ae: #b03a48;       /* Adverse events */
+      --proc: #1f63a8;     /* Procedures */
+      --find: #4a7a3a;     /* Clinical findings */
+      --como: #c97a2a;     /* Comorbidities */
+      --other: #6b7280;    /* Other */
+      --white: #fffdfa;
+      --shadow: 0 24px 70px rgba(42, 35, 25, .12);
+      --shadow-sm: 0 8px 22px rgba(42, 35, 25, .06);
+      --radius: 18px;
+      --radius-sm: 12px;
+      color-scheme: light;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(16,24,32,.03) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(16,24,32,.03) 1px, transparent 1px),
+        radial-gradient(circle at 18% 6%, rgba(46,138,153,.16), transparent 26rem),
+        radial-gradient(circle at 92% 4%, rgba(183,100,60,.13), transparent 30rem),
+        var(--paper);
+      background-size: 56px 56px, 56px 56px, auto, auto, auto;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    .container { width: min(1200px, calc(100% - 44px)); margin: 0 auto; }
+
+    /* NAV */
+    .nav {
+      position: sticky; top: 0; z-index: 30;
+      border-bottom: 1px solid rgba(217,210,196,.78);
+      background: rgba(251,250,247,.86);
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner { height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 600; letter-spacing: -.015em; }
+    .brand-mark {
+      width: 32px; height: 32px; border: 1px solid var(--ink); border-radius: 50%;
+      position: relative; background: var(--white); box-shadow: 4px 4px 0 var(--blue);
+      flex-shrink: 0;
+    }
+    .brand-mark::before, .brand-mark::after { content: ""; position: absolute; border-radius: 50%; }
+    .brand-mark::before { width: 6px; height: 6px; left: 7px; top: 8px; background: var(--ink); }
+    .brand-mark::after  { width: 9px; height: 9px; right: 6px; bottom: 7px; background: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 22px; font-size: 14.5px; color: var(--muted); }
+    .nav-links a { text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+    .nav-links a:hover { color: var(--ink); }
+    .pill-link { border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 16px; color: var(--blue) !important; background: rgba(255,253,250,.7); }
+
+    /* HERO */
+    .hero { padding: 76px 0 60px; display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(360px, .94fr); gap: 56px; align-items: start; }
+    .kicker { margin: 0 0 16px; color: var(--blue); font-size: 12.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-family: "IBM Plex Mono", monospace; }
+    h1, h2, h3, h4 { text-wrap: pretty; }
+    h1 {
+      margin: 0;
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(40px, 6.2vw, 72px);
+      line-height: .98;
+      letter-spacing: -.045em;
+      max-width: 920px;
+    }
+    .lead { margin: 24px 0 0; max-width: 720px; color: var(--muted); font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button {
+      min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      border-radius: 999px; padding: 0 20px; text-decoration: none; font-weight: 600; font-size: 14.5px;
+      border: 1px solid var(--ink); background: var(--ink); color: white;
+      box-shadow: 5px 5px 0 rgba(16,24,32,.18);
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+    .button:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0 rgba(16,24,32,.18); }
+    .button.secondary { background: var(--white); color: var(--ink); border-color: var(--line-strong); box-shadow: none; }
+
+    /* MANUSCRIPT META CARD */
+    .manuscript {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .manuscript-head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .doi { font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 11.5px; }
+    .status { color: var(--blue); border: 1px solid rgba(18,60,105,.25); background: rgba(18,60,105,.06); border-radius: 999px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; }
+    .manuscript-body { padding: 24px; }
+    .manuscript h2 { margin: 0 0 12px; font: 500 24px/1.18 "IBM Plex Serif", Georgia, serif; letter-spacing: -.02em; }
+    .manuscript p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 15px; }
+    .mini-table { margin-top: 18px; border-top: 1px solid var(--line); }
+    .mini-row { display: grid; grid-template-columns: 124px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+    .mini-row strong { color: var(--ink); font-weight: 600; }
+    .mini-row span { color: var(--muted); }
+
+    /* SECTIONS */
+    section { padding: 72px 0; }
+    section.tight { padding: 48px 0; }
+    .section-heading { max-width: 880px; margin-bottom: 36px; }
+    .section-heading h2 { margin: 0 0 14px; font: 500 clamp(30px, 4.2vw, 50px)/1.02 "IBM Plex Serif", Georgia, serif; letter-spacing: -.035em; }
+    .section-heading p { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.5; max-width: 780px; }
+
+    /* STAT STRIP */
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .stat { padding: 22px 22px 24px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+    .stat-num { font-family: "IBM Plex Serif", Georgia, serif; font-size: clamp(28px, 3.4vw, 40px); font-weight: 500; letter-spacing: -.025em; line-height: 1; }
+    .stat-label { margin-top: 8px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+    .stat-sub { display: block; font-family: "IBM Plex Mono", monospace; color: var(--muted-2); font-size: 11.5px; margin-top: 4px; }
+
+    /* PAPER ABSTRACT BLOCK */
+    .abstract {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-sm);
+      max-width: 980px;
+    }
+    .abstract h3 { margin: 0 0 10px; font-family: "IBM Plex Serif", Georgia, serif; font-weight: 500; font-size: 22px; letter-spacing: -.02em; }
+    .abstract p { margin: 0 0 14px; color: var(--ink-2); font-size: 16px; line-height: 1.65; }
+    .abstract p:last-child { margin-bottom: 0; }
+    .abstract .label-tag { font-family: "IBM Plex Mono", monospace; color: var(--blue); font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* TWO-COLUMN PROSE */
+    .prose-two { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: start; }
+    .prose-two p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; line-height: 1.7; }
+    .prose-two .side { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; box-shadow: var(--shadow-sm); }
+    .prose-two .side h4 { margin: 0 0 12px; font-size: 14px; font-family: "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+    .prose-two .side ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+    .prose-two .side li { font-size: 14.5px; color: var(--ink-2); line-height: 1.5; padding-left: 22px; position: relative; }
+    .prose-two .side li::before { content: ""; position: absolute; left: 0; top: 9px; width: 10px; height: 10px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 0 3px rgba(46,138,153,.16); }
+
+    /* PIPELINE FLOW */
+    .pipeline {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      overflow: hidden;
+    }
+    .pipeline-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+    .pipe-stage { padding: 8px 22px; border-right: 1px dashed var(--line-strong); position: relative; }
+    .pipe-stage:last-child { border-right: 0; }
+    .pipe-stage::after { content: "→"; position: absolute; right: -10px; top: 28px; font-size: 22px; color: var(--line-strong); background: var(--white); padding: 0 4px; font-family: "IBM Plex Mono", monospace; }
+    .pipe-stage:last-child::after { display: none; }
+    .pipe-num { font-family: "IBM Plex Mono", monospace; color: var(--clay); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; }
+    .pipe-stage h3 { margin: 8px 0 10px; font-family: "IBM Plex Serif", Georgia, serif; font-size: 22px; font-weight: 500; letter-spacing: -.02em; }
+    .pipe-stage p { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .pipe-list { padding: 0; margin: 0; list-style: none; display: grid; gap: 8px; }
+    .pipe-list li { padding-left: 18px; position: relative; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    .pipe-list li::before { content: ""; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+
+    /* TAXONOMY TREE VISUAL */
+    .tax-section { background: var(--blue-2); color: white; padding: 84px 0; margin: 60px 0 0; }
+    .tax-section .kicker { color: #9bd8e0; }
+    .tax-section h2 { margin: 0 0 14px; font: 500 clamp(32px, 4.4vw, 50px)/1.02 "IBM Plex Serif", Georgia, serif; letter-spacing: -.035em; }
+    .tax-section .lead { color: rgba(255,255,255,.78); }
+    .tax-card {
+      margin-top: 36px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 22px;
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .tax-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.12); margin-bottom: 22px; }
+    .tax-card-head span { font-family: "IBM Plex Mono", monospace; color: rgba(255,255,255,.62); font-size: 12px; }
+    .tax-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+    .tax-col { border-radius: 14px; padding: 16px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+    .tax-col h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+    .tax-col .col-meta { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: rgba(255,255,255,.6); }
+    .tax-col ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; }
+    .tax-col ul li { font-size: 13px; color: rgba(255,255,255,.86); display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; }
+    .tax-col ul li small { color: rgba(255,255,255,.5); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+    .tax-col[data-domain="ae"] { border-left: 3px solid #e25d6a; }
+    .tax-col[data-domain="proc"] { border-left: 3px solid #5da3e2; }
+    .tax-col[data-domain="find"] { border-left: 3px solid #87c46e; }
+    .tax-col[data-domain="como"] { border-left: 3px solid #e29a5d; }
+    .tax-col[data-domain="other"] { border-left: 3px solid #b9bcc4; }
+    .tax-foot { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; margin-top: 22px; color: rgba(255,255,255,.62); font-size: 13px; }
+
+
+    /* ITERATIVE TAXONOMY DISCOVERY GRAPH */
+    .evolution-panel {
+      margin-top: 34px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 22px;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 20% 8%, rgba(155,216,224,.14), transparent 28rem),
+        radial-gradient(circle at 86% 88%, rgba(199,154,42,.12), transparent 24rem),
+        rgba(255,255,255,.045);
+      box-shadow: 0 24px 80px rgba(0,0,0,.18);
+    }
+    .evolution-head { display: flex; justify-content: space-between; align-items: end; gap: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .evolution-head h3 { margin: 0; font-family: "IBM Plex Serif", Georgia, serif; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; letter-spacing: -.025em; }
+    .evolution-head p { margin: 8px 0 0; max-width: 680px; color: rgba(255,255,255,.72); font-size: 14.5px; }
+    .loop-badge { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: #9bd8e0; border: 1px solid rgba(155,216,224,.32); border-radius: 999px; padding: 7px 10px; white-space: nowrap; background: rgba(155,216,224,.08); }
+    .evolution-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 26px; align-items: center; margin-top: 24px; }
+    .tree-canvas { position: relative; min-height: 430px; border-radius: 18px; border: 1px solid rgba(255,255,255,.12); background: rgba(8,25,43,.42); overflow: hidden; padding: 22px; }
+    .tree-canvas svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .tree-canvas path { fill: none; stroke: rgba(155,216,224,.34); stroke-width: 1.4; stroke-dasharray: 7 7; }
+    .tree-node { position: absolute; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); border-radius: 13px; padding: 10px 12px; min-width: 132px; box-shadow: 0 12px 28px rgba(0,0,0,.16); }
+    .tree-node strong { display: block; font-size: 13.5px; line-height: 1.2; }
+    .tree-node span { display: block; margin-top: 3px; font-family: "IBM Plex Mono", monospace; font-size: 10px; color: rgba(255,255,255,.56); }
+    .tree-node.root { left: 50%; top: 18px; transform: translateX(-50%); border-color: rgba(199,154,42,.58); background: rgba(199,154,42,.15); text-align: center; }
+    .tree-node.meta-a { left: 10%; top: 112px; }
+    .tree-node.meta-b { left: 39%; top: 112px; }
+    .tree-node.meta-c { right: 10%; top: 112px; }
+    .tree-node.cat-a { left: 4%; top: 228px; border-color: rgba(155,216,224,.38); }
+    .tree-node.cat-b { left: 25%; top: 246px; border-color: rgba(155,216,224,.38); }
+    .tree-node.cat-c { left: 53%; top: 238px; border-color: rgba(155,216,224,.38); }
+    .tree-node.cat-d { right: 4%; top: 226px; border-color: rgba(155,216,224,.38); }
+    .tree-node.leaf-a { left: 12%; bottom: 22px; border-color: rgba(111,129,98,.62); background: rgba(111,129,98,.18); }
+    .tree-node.leaf-b { left: 38%; bottom: 22px; border-color: rgba(111,129,98,.62); background: rgba(111,129,98,.18); }
+    .tree-node.leaf-c { right: 13%; bottom: 22px; border-color: rgba(111,129,98,.62); background: rgba(111,129,98,.18); }
+    .iteration-rail { display: grid; gap: 12px; }
+    .iteration-step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(255,255,255,.045); }
+    .iteration-step .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: "IBM Plex Mono", monospace; color: #0b2744; background: #9bd8e0; font-weight: 700; font-size: 12px; }
+    .iteration-step h4 { margin: 0 0 4px; font-size: 14px; color: white; }
+    .iteration-step p { margin: 0; color: rgba(255,255,255,.66); font-size: 12.8px; line-height: 1.45; }
+    .feedback-loop { margin-top: 14px; padding: 13px 15px; border: 1px dashed rgba(199,154,42,.48); border-radius: 14px; color: rgba(255,255,255,.78); font-size: 13px; background: rgba(199,154,42,.08); }
+
+    /* BENCHMARK SECTION */
+    .bench { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: start; }
+    .bench-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 26px 28px;
+    }
+    .bench-card h3 { margin: 0 0 4px; font-family: "IBM Plex Serif", Georgia, serif; font-weight: 500; font-size: 22px; letter-spacing: -.02em; }
+    .bench-card .cap { margin: 0 0 18px; color: var(--muted); font-size: 13.5px; }
+    .bench-rows { display: grid; gap: 8px; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+    .bench-row { display: grid; grid-template-columns: 138px 1fr 56px; gap: 12px; align-items: center; }
+    .bench-row .name { color: var(--ink-2); font-family: "IBM Plex Sans", sans-serif; font-size: 13px; font-weight: 500; }
+    .bench-row .name.top { color: var(--blue); font-weight: 600; }
+    .bench-row .bar-wrap {
+      position: relative; height: 22px; background: rgba(16,24,32,.05); border-radius: 6px; overflow: hidden;
+      border: 1px solid rgba(16,24,32,.06);
+    }
+    .bench-row .bar { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 5px; background: linear-gradient(90deg, #3b6ca4, #2e8a99); }
+    .bench-row .bar.top { background: linear-gradient(90deg, #b03a48, #c79a2a); }
+    .bench-row .bar.med { background: linear-gradient(90deg, #2e8a99, #6f8162); }
+    .bench-row .pp { color: var(--ink); text-align: right; font-weight: 600; font-size: 12.5px; }
+    .bench-axis { display: flex; justify-content: space-between; margin-top: 12px; padding-left: 150px; padding-right: 60px; font-family: "IBM Plex Mono", monospace; font-size: 10.5px; color: var(--muted); }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--muted); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend i { width: 12px; height: 8px; border-radius: 2px; display: inline-block; }
+
+    /* PROMPT IMPROVEMENT CARD */
+    .prompt-card { display: grid; gap: 18px; }
+    .prompt-row { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 16px; background: var(--paper-2); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+    .prompt-row .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .prompt-row .name { font-weight: 600; font-size: 14.5px; }
+    .prompt-row .delta { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--sage); }
+    .prompt-row .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    .prompt-row .metric { background: var(--white); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+    .prompt-row .metric small { display: block; color: var(--muted); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+    .prompt-row .metric .v { color: var(--ink); font-weight: 600; font-size: 13px; }
+    .prompt-row .metric .v .new { color: var(--blue); }
+    .prompt-row .metric .v .old { color: var(--muted-2); text-decoration: line-through; margin-right: 4px; }
+
+    /* VALIDATION NOTE PANEL */
+    .heat { margin-top: 30px; }
+    .heat table { width: 100%; border-collapse: collapse; font-family: "IBM Plex Mono", monospace; font-size: 12px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+    .heat th, .heat td { padding: 9px 8px; text-align: center; border-bottom: 1px solid var(--line); }
+    .heat th { background: var(--paper-2); font-weight: 600; font-family: "IBM Plex Sans", sans-serif; font-size: 11.5px; color: var(--ink-2); letter-spacing: .03em; }
+    .heat td:first-child, .heat th:first-child { text-align: left; padding-left: 14px; font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; }
+    .heat td.score { color: var(--ink); font-weight: 600; }
+    .heat .h-95 { background: rgba(46,138,153,.42); }
+    .heat .h-90 { background: rgba(46,138,153,.32); }
+    .heat .h-85 { background: rgba(46,138,153,.22); }
+    .heat .h-80 { background: rgba(199,154,42,.22); }
+    .heat .h-70 { background: rgba(176,58,72,.20); }
+    .heat .h-60 { background: rgba(176,58,72,.30); }
+    .heat .h-low { background: rgba(176,58,72,.42); color: var(--white); }
+
+    /* TOOLS SECTION */
+    .tools-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+    .tool-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
+      min-height: 380px;
+    }
+    .tool-card .tool-tag { font-family: "IBM Plex Mono", monospace; color: var(--clay); font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    .tool-card h3 { margin: 10px 0 8px; font-family: "IBM Plex Serif", Georgia, serif; font-weight: 500; font-size: 24px; letter-spacing: -.02em; line-height: 1.1; }
+    .tool-card p.desc { margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .tool-card .tool-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .chip-stack { font-family: "IBM Plex Mono", monospace; font-size: 11px; padding: 4px 9px; border-radius: 999px; background: rgba(18,60,105,.07); color: var(--blue); border: 1px solid rgba(18,60,105,.12); }
+    .tool-card ol { margin: 0; padding: 0 0 0 20px; color: var(--ink-2); font-size: 13.5px; line-height: 1.55; }
+    .tool-card ol li { margin-bottom: 6px; }
+    .tool-card .tool-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); }
+
+    /* PHASE FLOWCHART */
+    .phase-flow {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 28px 32px;
+      margin-top: 30px;
+      box-shadow: var(--shadow-sm);
+    }
+    .phase-flow h4 { margin: 0 0 4px; font-size: 13px; font-family: "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+    .phase-flow .phase-cap { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
+    .phases { display: grid; grid-template-columns: repeat(9, minmax(0,1fr)); gap: 6px; }
+    .phase {
+      padding: 12px 10px;
+      border-radius: 10px;
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--ink-2);
+      line-height: 1.3;
+      position: relative;
+    }
+    .phase strong { display: block; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--clay); margin-bottom: 4px; letter-spacing: .06em; }
+    .phase[data-stage="discover"] { background: rgba(46,138,153,.10); border-color: rgba(46,138,153,.28); }
+    .phase[data-stage="label"]    { background: rgba(199,154,42,.12); border-color: rgba(199,154,42,.28); }
+    .phase[data-stage="tree"]     { background: rgba(111,129,98,.14); border-color: rgba(111,129,98,.32); }
+    .phase-legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px; font-size: 12px; color: var(--muted); }
+    .phase-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; vertical-align: -2px; margin-right: 6px; }
+
+    /* CLINICAL IMPACT */
+    .impact { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .impact-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 26px;
+    }
+    .impact-card h3 { margin: 0 0 14px; font-family: "IBM Plex Serif", Georgia, serif; font-weight: 500; font-size: 22px; letter-spacing: -.02em; }
+    .auc-list { display: grid; gap: 12px; margin-top: 16px; font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+    .auc-row { display: grid; grid-template-columns: 1fr 70px; gap: 10px; align-items: center; }
+    .auc-row .label { font-family: "IBM Plex Sans", sans-serif; color: var(--ink-2); font-size: 13.5px; }
+    .auc-row .auc-bar-wrap { position: relative; height: 12px; background: rgba(16,24,32,.06); border-radius: 4px; overflow: hidden; grid-column: 1 / -1; margin-top: 4px; }
+    .auc-row .auc-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #3b6ca4, #2e8a99); border-radius: 4px; }
+    .auc-row .v { font-weight: 600; color: var(--ink); text-align: right; }
+
+    .topcomp { display: grid; gap: 8px; margin-top: 14px; font-size: 13.5px; }
+    .topcomp .row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 8px 10px; border-radius: 8px; background: var(--paper-2); border: 1px solid var(--line); }
+    .topcomp .row .lbl { color: var(--ink-2); }
+    .topcomp .row .pct { font-family: "IBM Plex Mono", monospace; color: var(--blue); font-weight: 600; min-width: 56px; text-align: right; }
+    .topcomp .row .src { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; color: var(--muted); padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); }
+    .topcomp .row .src.free { border-color: rgba(199,154,42,.4); color: #8a6c19; background: rgba(199,154,42,.10); }
+    .topcomp .row .src.struct { border-color: rgba(18,60,105,.25); color: var(--blue); background: rgba(18,60,105,.06); }
+    .topcomp .row .src.both { border-color: rgba(111,129,98,.35); color: var(--sage); background: rgba(111,129,98,.10); }
+    .topcomp .row .src.derived { border-color: rgba(176,58,72,.32); color: var(--crimson); background: rgba(176,58,72,.08); }
+
+    /* REPRODUCIBILITY STRIP */
+    .repro { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .repro-cell { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--white); }
+    .repro-cell h4 { margin: 0 0 6px; font-size: 13.5px; }
+    .repro-cell p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .repro-cell .tag { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: 4px; }
+
+    /* RELEASE / FOOTER */
+    .release { border-top: 1px solid var(--line); padding-top: 48px; display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; }
+    .release h2 { margin: 0; max-width: 720px; font: 500 clamp(28px, 4vw, 44px)/1.04 "IBM Plex Serif", Georgia, serif; letter-spacing: -.035em; }
+    .release p { max-width: 480px; margin: 8px 0 0; color: var(--muted); line-height: 1.55; font-size: 15px; }
+    footer { padding: 36px 0 56px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); margin-top: 48px; }
+    footer .container { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+
+    /* INLINE CITATION CHIP */
+    .cite { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--blue); background: rgba(18,60,105,.06); padding: 1px 7px; border-radius: 4px; vertical-align: 1px; margin-left: 4px; }
+    .num { color: var(--blue); font-weight: 600; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1080px) {
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2n) { border-right: 0; }
+      .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .tax-grid { grid-template-columns: repeat(2, 1fr); }
+      .evolution-grid { grid-template-columns: 1fr; }
+      .bench { grid-template-columns: 1fr; }
+      .impact { grid-template-columns: 1fr; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .phases { grid-template-columns: repeat(3, 1fr); }
+      .repro { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 800px) {
+      .hero, .prose-two, .release, .pipeline-grid { grid-template-columns: 1fr; gap: 30px; }
+      .pipe-stage { border-right: 0; border-bottom: 1px solid var(--line); padding: 20px 0; }
+      .pipe-stage:last-child { border-bottom: 0; }
+      .pipe-stage::after { display: none; }
+      .nav-links { display: none; }
+      .bench-row { grid-template-columns: 110px 1fr 50px; font-size: 11.5px; }
+      .bench-axis { padding-left: 122px; padding-right: 50px; }
+      .heat { overflow-x: auto; }
+      .heat table { min-width: 640px; }
+      .evolution-head { align-items: start; flex-direction: column; }
+      .tree-canvas { min-height: 560px; }
+      .tree-node { min-width: 118px; max-width: 150px; }
+      .tree-node.root { top: 16px; }
+      .tree-node.meta-a { left: 7%; top: 106px; }
+      .tree-node.meta-b { left: 52%; top: 106px; }
+      .tree-node.meta-c { left: 29%; right: auto; top: 188px; }
+      .tree-node.cat-a { left: 6%; top: 292px; }
+      .tree-node.cat-b { left: 52%; top: 292px; }
+      .tree-node.cat-c { left: 6%; top: 385px; }
+      .tree-node.cat-d { left: 52%; right: auto; top: 385px; }
+      .tree-node.leaf-a { left: 5%; bottom: 18px; }
+      .tree-node.leaf-b { left: 36%; bottom: 18px; }
+      .tree-node.leaf-c { right: 5%; bottom: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="Med Taxonomizer home"><span class="brand-mark" aria-hidden="true"></span><span>Med Taxonomizer</span></a>
+      <div class="nav-links">
+        <a href="#why">Why</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#taxonomy">Taxonomy</a>
+        <a href="#tools">Tools</a>
+        <a href="#impact">Apply</a>
+        <a class="pill-link" href="https://github.com/haasp1/med_taxonomizer">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- ============== HERO ============== -->
+    <div class="container hero">
+      <section aria-labelledby="hero-title">
+        <p class="kicker">Medical NLP · taxonomy induction · full-corpus labeling</p>
+        <h1 id="hero-title">Turning overlooked free-text fields into a reviewable taxonomy and analyzable labels.</h1>
+        <p class="lead">
+          Med Taxonomizer is an open research toolkit for teams with existing free-text medical data that rarely enters quantitative analysis.
+          It helps convert heterogeneous notes, comments, and registry text fields into a transparent taxonomy and reproducible
+          per-record labels that can be joined back to the dataset for statistical analysis.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#tools">Open the tools</a>
+          <a class="button secondary" href="https://github.com/haasp1/med_taxonomizer">GitHub repository</a>
+          <a class="button secondary" href="https://github.com/haasp1/med_taxonomizer/blob/main/docs/applying-to-your-data.md">Apply to your data</a>
+          <a class="button secondary" href="#pipeline">Read the method</a>
+        </div>
+      </section>
+
+      <aside class="manuscript" aria-label="Research toolkit summary">
+        <div class="manuscript-head">
+          <span class="doi">paper-support toolkit · release in preparation</span>
+          <span class="status">in preparation</span>
+        </div>
+        <div class="manuscript-body">
+          <h2>A reusable pipeline for discovering a taxonomy and labeling the full dataset.</h2>
+          <p>The toolkit packages the core workflow: induce a staged taxonomy from free text, review the tree where needed,
+          and apply the finalized labels to every eligible record for quantitative analysis.</p>
+          <div class="mini-table" aria-label="Project metadata">
+            <div class="mini-row"><strong>Input</strong><span>Free-text fields, short notes, comments, or descriptions</span></div>
+            <div class="mini-row"><strong>Output</strong><span>Versioned taxonomy tree + per-record labels + analysis table</span></div>
+            <div class="mini-row"><strong>Reference run</strong><span>Paper-facing taxonomy run with Qwen 3.5 27B</span></div>
+            <div class="mini-row"><strong>Paper focus</strong><span>Taxonomy induction, transparent labeling, and downstream analysis of free-text variables</span></div>
+            <div class="mini-row"><strong>Use case</strong><span>Make neglected free-text data measurable and analyzable</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ============== STAT STRIP ============== -->
+    <section class="container tight" aria-label="Headline figures">
+      <div class="stat-strip">
+        <div class="stat">
+          <div class="stat-num">Free text</div>
+          <div class="stat-label">existing medical text fields as input</div>
+          <span class="stat-sub">comments · complications · adverse-event descriptions · notes</span>
+        </div>
+        <div class="stat">
+          <div class="stat-num">Tree</div>
+          <div class="stat-label">multi-level taxonomy as output</div>
+          <span class="stat-sub">domains · categories · subcategories · leaf labels</span>
+        </div>
+        <div class="stat">
+          <div class="stat-num">Labels</div>
+          <div class="stat-label">per-record assignments for analysis</div>
+          <span class="stat-sub">multi-label records · taxonomy paths · run metadata</span>
+        </div>
+        <div class="stat">
+          <div class="stat-num">Review</div>
+          <div class="stat-label">human-readable artifacts for checking the result</div>
+          <span class="stat-sub">taxonomy JSON · label table · metadata · optional reviewed sample</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== WHY THE PROBLEM IS HARD ============== -->
+    <section class="container" id="why">
+      <div class="section-heading">
+        <p class="kicker">Why this is hard</p>
+        <h2>Free-text fields contain analyzable information, but usually remain outside the dataset.</h2>
+        <p>Many clinical registries and research datasets include short free-text fields for comments, complications, adverse events,
+        or unexpected findings. These fields often contain the most specific information, but they are difficult to use because
+        labels are inconsistent, multi-event descriptions are common, and no fixed taxonomy exists up front.</p>
+      </div>
+
+      <div class="abstract">
+        <h3><span class="label-tag">Method</span> &nbsp; What the toolkit does</h3>
+        <p>
+          The workflow starts with an existing corpus of free-text records. Text is normalized, non-informative entries are filtered,
+          and the remaining descriptions are processed in batches so that even short, messy, multi-label clinical notes can become
+          structured research variables.
+        </p>
+        <p>
+          Instead of asking users to hand-design a label space, the taxonomy builder proposes domains and categories bottom-up.
+          Multiple model runs are consolidated into a stable draft taxonomy, then reviewed, pruned, and exported as a versioned tree.
+        </p>
+        <p>
+          In the paper-facing workflow, an open-weight model such as <span class="num">Qwen 3.5 27B</span> can induce a
+          multi-level taxonomy directly from the corpus. The point is not that one fixed taxonomy is universal, but that the
+          same process can be rerun for another dataset and clinical domain.
+        </p>
+        <p>
+          Once the taxonomy is fixed, the labeler applies the same schema to the full corpus. A small human-reviewed
+          sample can be used as a quality check before scaling, but the main deliverable is a statistically analyzable label table
+          for the whole dataset.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============== END-TO-END PIPELINE ============== -->
+    <section class="container" id="pipeline">
+      <div class="section-heading">
+        <p class="kicker">End-to-end pipeline</p>
+        <h2>From existing free text to a taxonomy tree and full-dataset labels.</h2>
+        <p>Each stage writes inspectable artifacts: taxonomy candidates, consolidation decisions, run metadata, and final
+        per-record labels. A team can start with its own text column and end with variables that are ready for statistics.</p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-grid">
+          <div class="pipe-stage">
+            <span class="pipe-num">Stage I</span>
+            <h3>Taxonomy induction</h3>
+            <p>Multi-seed LLM ensemble discovers domains and categories bottom-up from de-identified text. No predefined
+            label space.</p>
+            <ul class="pipe-list">
+              <li>6 seeds &times; domain discovery, then per-domain category ensembles</li>
+              <li>LLM-guided consolidation merges seeds into a flat taxonomy</li>
+              <li>Split audit + subcategory expansion produces the final tree</li>
+            </ul>
+          </div>
+          <div class="pipe-stage">
+            <span class="pipe-num">Stage II</span>
+            <h3>Review &amp; taxonomy stabilization</h3>
+            <p>Human review makes the discovered tree editable and auditable. Reviewers can rename, merge, split, or approve labels
+            before the taxonomy is frozen for full-corpus labeling.</p>
+            <ul class="pipe-list">
+              <li>Path-aware search across the evolving tree</li>
+              <li>Approve, rename, merge, split, or mark uncertain nodes</li>
+              <li>Optional reviewed sample to check stability before scaling</li>
+            </ul>
+          </div>
+          <div class="pipe-stage">
+            <span class="pipe-num">Stage III</span>
+            <h3>Full-dataset labeling</h3>
+            <p>The selected labeling configuration is applied to every eligible text record, producing one or more validated
+            taxonomy labels per entry.</p>
+            <ul class="pipe-list">
+              <li>Async, resumable SQLite-backed batches (size 25, concurrency 6)</li>
+              <li>Exports tidy tables for statistical analysis, dashboards, or manual review</li>
+              <li>Keeps taxonomy version, prompt file, and model metadata attached</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-flow">
+        <h4>Stage I in detail · manuscript-style taxonomy pipeline with <code>qwen/qwen3.5-27b</code></h4>
+        <p class="phase-cap">A bottom-up, consolidation-first taxonomy run. Each phase persists JSON artifacts so the pipeline
+        is fully resumable and inspectable.</p>
+        <div class="phases" aria-label="Nine phases of taxonomy induction">
+          <div class="phase" data-stage="discover"><strong>00</strong>Meta discovery (multi-seed)</div>
+          <div class="phase" data-stage="discover"><strong>01</strong>Meta consolidation</div>
+          <div class="phase" data-stage="discover"><strong>02</strong>Category discovery (per meta)</div>
+          <div class="phase" data-stage="discover"><strong>03</strong>Category consolidation</div>
+          <div class="phase" data-stage="label"><strong>04</strong>Flat labeling (multi-label)</div>
+          <div class="phase" data-stage="label"><strong>05</strong>Review of <code>other</code></div>
+          <div class="phase" data-stage="tree"><strong>06</strong>Split audit (3-seed vote)</div>
+          <div class="phase" data-stage="tree"><strong>07</strong>Subcategory discovery</div>
+          <div class="phase" data-stage="tree"><strong>08</strong>Final tree consolidation</div>
+        </div>
+        <div class="phase-legend">
+          <span><i style="background: rgba(46,138,153,.45)"></i>Discovery &amp; consolidation</span>
+          <span><i style="background: rgba(199,154,42,.55)"></i>Labeling &amp; <code>other</code> review</span>
+          <span><i style="background: rgba(111,129,98,.55)"></i>Hierarchy &amp; pruning</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== TAXONOMY VISUAL ============== -->
+    <section class="tax-section" id="taxonomy">
+      <div class="container">
+        <div class="section-heading" style="color: white;">
+          <p class="kicker">Corpus-derived taxonomy discovery</p>
+          <h2>The tree is not predefined. It is induced from the corpus, consolidated, pruned, and exported for analysis.</h2>
+          <p class="lead">Med Taxonomizer treats taxonomy construction as a staged scientific process: discover broad meta-domains, consolidate them, discover categories inside each domain, consolidate again, then expand over-broad branches into subcategories and leaves.</p>
+        </div>
+
+        <div class="evolution-panel" aria-label="Iterative taxonomy tree creation">
+          <div class="evolution-head">
+            <div>
+              <h3>Tree construction from corpus to export</h3>
+              <p>Each stage asks a narrower taxonomy question, then merges overlapping proposals before the next layer is built. Over-broad nodes are expanded or pruned before the final export is used for labeling.</p>
+            </div>
+            <span class="loop-badge">discover → consolidate → expand → prune → export</span>
+          </div>
+
+          <div class="evolution-grid">
+            <div class="tree-canvas" role="img" aria-label="Taxonomy tree grows from corpus to meta domains, categories, subcategories and reviewed leaves">
+              <svg viewBox="0 0 760 430" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M380 68 C260 92 180 104 128 144" />
+                <path d="M380 68 C360 104 358 122 380 154" />
+                <path d="M380 68 C520 94 594 108 632 148" />
+                <path d="M128 178 C92 212 86 236 86 272" />
+                <path d="M128 178 C190 210 230 226 265 284" />
+                <path d="M380 178 C392 218 422 238 470 276" />
+                <path d="M632 180 C650 212 668 236 674 270" />
+                <path d="M265 320 C208 344 186 366 162 398" />
+                <path d="M470 318 C432 348 418 366 405 398" />
+                <path d="M674 312 C630 344 604 368 574 398" />
+              </svg>
+              <div class="tree-node root"><strong>Free-text corpus</strong><span>heterogeneous records</span></div>
+              <div class="tree-node meta-a"><strong>Meta-domain</strong><span>multi-seed discovery</span></div>
+              <div class="tree-node meta-b"><strong>Meta-domain</strong><span>consolidated group</span></div>
+              <div class="tree-node meta-c"><strong>Meta-domain</strong><span>support counted</span></div>
+              <div class="tree-node cat-a"><strong>Category</strong><span>within-domain pass</span></div>
+              <div class="tree-node cat-b"><strong>Category</strong><span>near-duplicates merged</span></div>
+              <div class="tree-node cat-c"><strong>Category</strong><span>ambiguous nodes flagged</span></div>
+              <div class="tree-node cat-d"><strong>Category</strong><span>definitions refined</span></div>
+              <div class="tree-node leaf-a"><strong>Subcategory</strong><span>expanded branch</span></div>
+              <div class="tree-node leaf-b"><strong>Leaf label</strong><span>validated path</span></div>
+              <div class="tree-node leaf-c"><strong>Leaf label</strong><span>analysis-ready</span></div>
+            </div>
+
+            <div class="iteration-rail" aria-label="Discovery and consolidation steps">
+              <div class="iteration-step"><span class="n">01</span><div><h4>Meta discovery</h4><p>Independent model seeds propose broad semantic domains from the corpus without a fixed label space.</p></div></div>
+              <div class="iteration-step"><span class="n">02</span><div><h4>Meta consolidation</h4><p>Overlapping domain proposals are merged; weak or ambiguous groups are renamed, pruned, or kept for review.</p></div></div>
+              <div class="iteration-step"><span class="n">03</span><div><h4>Category discovery</h4><p>Each consolidated meta-domain becomes a narrower discovery problem for recurring categories.</p></div></div>
+              <div class="iteration-step"><span class="n">04</span><div><h4>Category consolidation</h4><p>Category candidates are deduplicated, definitions are aligned, and parent-child relationships are stabilized.</p></div></div>
+              <div class="iteration-step"><span class="n">05</span><div><h4>Subcategory expansion</h4><p>Broad, mixed, or frequently unresolved categories are recursively expanded into subcategories and leaf labels.</p></div></div>
+              <div class="feedback-loop">The output is a versioned taxonomy tree plus per-record label assignments. The hierarchy remains inspectable, so downstream analyses can report exactly which taxonomy version and labeler generated each variable.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tax-card" aria-label="Taxonomy overview">
+          <div class="tax-card-head">
+            <span>taxonomy_tree_final.json &middot; paper-facing hierarchy export</span>
+            <span>multi-level tree · derived from the user corpus</span>
+          </div>
+          <div class="tax-grid">
+            <div class="tax-col" data-domain="ae">
+              <h3>Domain layer</h3>
+              <span class="col-meta">broad semantic groups</span>
+              <ul>
+                <li>Adverse events</li>
+                <li>Clinical findings</li>
+                <li>Interventions</li>
+                <li>Contextual factors</li>
+                <li>Other / unresolved</li>
+              </ul>
+            </div>
+            <div class="tax-col" data-domain="proc">
+              <h3>Category layer</h3>
+              <span class="col-meta">reviewable concepts</span>
+              <ul>
+                <li>specific recurring themes</li>
+                <li>merged near-duplicates</li>
+                <li>clear definitions</li>
+                <li>parent relationships</li>
+                <li>review notes</li>
+              </ul>
+            </div>
+            <div class="tax-col" data-domain="find">
+              <h3>Leaf layer</h3>
+              <span class="col-meta">analysis-ready labels</span>
+              <ul>
+                <li>stable label paths</li>
+                <li>schema identifiers</li>
+                <li>multi-label support</li>
+                <li>provenance counts</li>
+                <li>version metadata</li>
+              </ul>
+            </div>
+            <div class="tax-col" data-domain="como">
+              <h3>Review layer</h3>
+              <span class="col-meta">human decisions</span>
+              <ul>
+                <li>approve / rename</li>
+                <li>merge / split</li>
+                <li>move in hierarchy</li>
+                <li>mark uncertain</li>
+                <li>freeze release</li>
+              </ul>
+            </div>
+            <div class="tax-col" data-domain="other">
+              <h3>Export</h3>
+              <span class="col-meta">for downstream analysis</span>
+              <ul>
+                <li>taxonomy JSON</li>
+                <li>label table</li>
+                <li>validation file</li>
+                <li>run metadata</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tax-foot">
+            <span><strong style="color:white;">Design principle:</strong> the taxonomy is generated from the user's corpus, then stabilized by human review before full labeling.</span>
+            <span>Output: versioned tree · tidy labels · audit trail</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== TOOLS ============== -->
+    <section class="container" id="tools">
+      <div class="section-heading">
+        <p class="kicker">Three tools, one workflow</p>
+        <h2>From an empty taxonomy to labeled records, reusable for another corpus.</h2>
+        <p>The toolkit publishes the core capabilities a research team needs to apply this method: inductive taxonomy generation,
+        optional human review of the tree, and full-corpus labeling that scales to a complete dataset.</p>
+      </div>
+
+      <div class="tools-grid">
+        <!-- TOOL 1 -->
+        <article class="tool-card" aria-labelledby="tool1">
+          <span class="tool-tag">Tool 01 · taxonomy induction</span>
+          <h3 id="tool1">Generate a multi-level taxonomy from free-text data.</h3>
+          <p class="desc">A staged Python pipeline that can run with an open-weight LLM such as
+          <code>qwen/qwen3.5-27b</code>. It discovers domains, categories, and subcategories without requiring a predefined
+          label space. Intermediate JSON artifacts preserve the taxonomy decisions at every step.</p>
+          <div class="tool-stack">
+            <span class="chip-stack">Qwen 3.5 27B</span>
+            <span class="chip-stack">model-agnostic</span>
+            <span class="chip-stack">Pydantic schemas</span>
+            <span class="chip-stack">structured JSON</span>
+          </div>
+          <ol>
+            <li>Multi-seed meta &amp; category discovery (6 + 3 seeds)</li>
+            <li>LLM-guided consolidation, per-domain &amp; cross-domain</li>
+            <li>Flat labeling of all entries with multi-label support</li>
+            <li>Constrained <code>other</code> review for missing categories</li>
+            <li>Three-seed split audit, subcategory expansion, tree pruning</li>
+          </ol>
+          <div class="tool-foot">Public capability: build a multi-level taxonomy tree from a text column.</div>
+        </article>
+
+        <!-- TOOL 2 -->
+        <article class="tool-card" aria-labelledby="tool2">
+          <span class="tool-tag">Tool 02 · taxonomy review</span>
+          <h3 id="tool2">Local reviewer to stabilize the taxonomy before labeling.</h3>
+          <p class="desc">The repository includes installable local reviewer code. Teams can load a taxonomy JSON file in their own
+          browser, record approve, rename, merge, split, or reject decisions, and export a review CSV.</p>
+          <div class="tool-stack">
+            <span class="chip-stack">local browser app</span>
+            <span class="chip-stack">taxonomy review CSV</span>
+            <span class="chip-stack">versioned exports</span>
+            <span class="chip-stack">audit notes</span>
+          </div>
+          <ol>
+            <li>Run with <code>cd apps/reviewer &amp;&amp; python3 -m http.server 5173</code></li>
+            <li>Load a taxonomy JSON file locally in the browser</li>
+            <li>Capture reviewer decisions and notes for ambiguous nodes</li>
+            <li>Export a spreadsheet-friendly review queue</li>
+            <li>No hosted service or bundled project dataset is required</li>
+          </ol>
+          <div class="tool-foot">Public capability: create a stable taxonomy release before full-corpus labeling.</div>
+        </article>
+
+        <!-- TOOL 3 -->
+        <article class="tool-card" aria-labelledby="tool3">
+          <span class="tool-tag">Tool 03 · full-dataset labeling</span>
+          <h3 id="tool3">Full-corpus labeler for the entire dataset.</h3>
+          <p class="desc">Applies the selected prompt and taxonomy to all eligible records with batched, resumable
+          structured output. The result is a tidy label table that can feed statistics, dashboards, or downstream models.</p>
+          <div class="tool-stack">
+            <span class="chip-stack">asyncio</span>
+            <span class="chip-stack">SQLite cache</span>
+            <span class="chip-stack">batch 25 / conc. 6</span>
+            <span class="chip-stack">resumable</span>
+          </div>
+          <ol>
+            <li>Loads the final taxonomy tree &amp; applies the selected prompt</li>
+            <li>Constrains output to valid taxonomy paths via JSON schema</li>
+            <li>Writes one row per <code>record × concept</code> or project-specific grouping</li>
+            <li>Skips IDs already present, so reruns continue without rework</li>
+            <li>Exports labels for joining back to your source table</li>
+          </ol>
+          <div class="tool-foot">Public capability: export joinable labels for downstream analysis.</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============== LIGHTWEIGHT VALIDATION ============== -->
+    <section class="container" id="validation">
+      <div class="section-heading">
+        <p class="kicker">Lightweight validation</p>
+        <h2>A small quality check before full-dataset labeling.</h2>
+        <p>Validation is intentionally lightweight: review a sample, check that the taxonomy can be applied reliably, then label the full dataset. Provenance or source-field analyses should be treated as context and discordance checks, not as gold-standard accuracy unless separately adjudicated.</p>
+      </div>
+
+      <div class="bench">
+        <!-- QUALITY CHECK PANEL -->
+        <div class="bench-card">
+          <h3>Optional reviewed-sample check</h3>
+          <p class="cap">A reviewed sample can help choose a labeling configuration before applying it to every record. Quantitative scores should only be reported when a genuine human reference set exists.</p>
+          <div class="bench-rows" role="img" aria-label="Quality-check checklist for applying the taxonomy">
+            <div class="bench-row"><span class="name top">Input check</span><div class="bar-wrap"><div class="bar top" style="width: 100%"></div></div><span class="pp">text-only</span></div>
+            <div class="bench-row"><span class="name top">Taxonomy check</span><div class="bar-wrap"><div class="bar top" style="width: 92%"></div></div><span class="pp">review</span></div>
+            <div class="bench-row"><span class="name top">Label check</span><div class="bar-wrap"><div class="bar med" style="width: 85%"></div></div><span class="pp">sample</span></div>
+            <div class="bench-row"><span class="name">Provenance check</span><div class="bar-wrap"><div class="bar" style="width: 75%"></div></div><span class="pp">matrix</span></div>
+          </div>
+          <div class="bench-axis"><span>input</span><span>taxonomy</span><span>labels</span><span>analysis</span></div>
+          <div class="legend">
+            <span><i style="background: linear-gradient(90deg, #b03a48, #c79a2a)"></i>Do before scaling</span>
+            <span><i style="background: linear-gradient(90deg, #2e8a99, #6f8162)"></i>Optional reviewed sample</span>
+            <span><i style="background: linear-gradient(90deg, #3b6ca4, #2e8a99)"></i>Paper provenance analysis</span>
+          </div>
+        </div>
+
+        <div class="bench-card">
+          <h3>Where validation fits</h3>
+          <p class="cap">Use validation only to reduce risk before scaling. The central workflow is still taxonomy creation followed by full-dataset labeling.</p>
+          <div class="prompt-card">
+            <div class="prompt-row">
+              <div class="head"><span class="name">1 · Sample</span><span class="delta">start small</span></div>
+              <p class="cap">Draw a representative subset from your free-text column and review it against the induced taxonomy.</p>
+            </div>
+            <div class="prompt-row">
+              <div class="head"><span class="name">2 · Check</span><span class="delta">stability / agreement</span></div>
+              <p class="cap">Confirm that labels are stable enough for the intended analysis.</p>
+            </div>
+            <div class="prompt-row">
+              <div class="head"><span class="name">3 · Label</span><span class="delta">full corpus</span></div>
+              <p class="cap">Apply the chosen configuration to the complete dataset with resumable Python jobs.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="heat" aria-label="Validation interpretation">
+        <div style="padding: 22px; display: grid; gap: 14px;">
+          <h3 style="margin:0; font-family:'IBM Plex Serif', Georgia, serif; font-size: clamp(24px, 3vw, 34px);">What to validate on your own data</h3>
+          <p class="cap" style="font-family:'IBM Plex Sans'; font-size:14px; color:var(--muted); margin:0; max-width:820px;">
+            Use a reviewed sample as a sanity check for the taxonomy and labeler, not as the main workflow. The main goal is to
+            produce a complete, joinable label table for downstream statistics.
+          </p>
+          <div class="phase-legend" style="margin-top: 4px;">
+            <span><i style="background: rgba(46,138,153,.45)"></i>sample representative records</span>
+            <span><i style="background: rgba(199,154,42,.55)"></i>review against the taxonomy</span>
+            <span><i style="background: rgba(111,129,98,.55)"></i>check label quality against reviewed examples</span>
+            <span><i style="background: rgba(59,108,164,.45)"></i>freeze the prompt and label full corpus</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== CLINICAL IMPACT ============== -->
+    <section class="container" id="impact">
+      <div class="section-heading">
+        <p class="kicker">Apply it to your data</p>
+        <h2>A practical path from neglected text columns to analysis-ready variables.</h2>
+        <p>The important output is a reproducible table of labels that can be joined back to your
+        own dataset. Med Taxonomizer is designed for teams that already have free-text columns and want a transparent way
+        to turn them into analyzable taxonomy features.</p>
+      </div>
+
+      <div class="impact">
+        <article class="impact-card">
+          <h3>Recommended adoption path</h3>
+          <p style="margin:0 0 6px; color:var(--muted); font-size: 13.5px;">Start with a small representative extract, inspect the taxonomy, then scale only after the label space is stable.</p>
+          <div class="topcomp">
+            <div class="row"><span class="lbl">1. Prepare text</span><span class="src struct">CSV / Parquet</span><span class="pct">normalize</span></div>
+            <div class="row"><span class="lbl">2. Induce taxonomy</span><span class="src free">LLM ensemble</span><span class="pct">draft</span></div>
+            <div class="row"><span class="lbl">3. Review taxonomy</span><span class="src both">human</span><span class="pct">curate</span></div>
+            <div class="row"><span class="lbl">4. Review sample</span><span class="src derived">human</span><span class="pct">check</span></div>
+            <div class="row"><span class="lbl">5. Select labeler</span><span class="src both">review</span><span class="pct">freeze</span></div>
+            <div class="row"><span class="lbl">6. Label corpus</span><span class="src struct">Python</span><span class="pct">export</span></div>
+          </div>
+        </article>
+
+        <article class="impact-card">
+          <h3>What the exported label table enables</h3>
+          <p style="margin:0 0 6px; color:var(--muted); font-size: 13.5px;">The pipeline is intentionally boring at the end: a tidy table with stable IDs, taxonomy paths, and metadata.</p>
+          <div class="auc-list" aria-label="Exported outputs">
+            <div class="auc-row"><span class="label">taxonomy_tree_final.json</span><span class="v">tree</span><div class="auc-bar-wrap"><div class="auc-bar" style="width: 88%"></div></div></div>
+            <div class="auc-row"><span class="label">taxonomy_nodes.csv / taxonomy_edges.csv</span><span class="v">graph</span><div class="auc-bar-wrap"><div class="auc-bar" style="width: 72%"></div></div></div>
+            <div class="auc-row"><span class="label">labels.csv / analysis tables</span><span class="v">analysis</span><div class="auc-bar-wrap"><div class="auc-bar" style="width: 96%"></div></div></div>
+          </div>
+          <p style="margin:18px 0 0; color:var(--muted); font-size: 12.5px; line-height: 1.55;">
+            Typical downstream uses include prevalence summaries, timepoint profiles, subgroup comparisons, regression models,
+            dashboards, and manual audit lists. The exact clinical use case is supplied by the user; the toolkit supplies the
+            taxonomy and reproducible labels.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============== REPRODUCIBILITY ============== -->
+    <section class="container" id="repro">
+      <div class="section-heading">
+        <p class="kicker">Documentation &amp; reproducibility</p>
+        <h2>Every artifact, prompt, and run is inspectable.</h2>
+      </div>
+      <div class="repro">
+        <div class="repro-cell">
+          <p class="tag">Documentation</p>
+          <h4>Bring your own corpus</h4>
+          <p>Start from a CSV, Parquet, or database extract with a text column. The docs walk
+          through taxonomy induction, review, validation, and full-corpus labeling.</p>
+        </div>
+        <div class="repro-cell">
+          <p class="tag">Models</p>
+          <h4>Open-weight by default</h4>
+          <p>Discovery can run with <code>qwen/qwen3.5-27b</code> or another structured-output-capable model. Proprietary models
+          are optional comparison points, not a requirement for using the tool.</p>
+        </div>
+        <div class="repro-cell">
+          <p class="tag">Determinism</p>
+          <h4>Schema-validated outputs</h4>
+          <p>Every model response is parsed against a Pydantic JSON schema with two-shot repair retries; invalid outputs
+          are rejected, not silently corrected.</p>
+        </div>
+        <div class="repro-cell">
+          <p class="tag">Traceability</p>
+          <h4>Inspectable run metadata</h4>
+          <p>Each phase records the model, seed, prompt version, and export metadata needed to audit the taxonomy
+          and labeling outputs end-to-end.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== RELEASE ============== -->
+    <section class="container" id="release">
+      <div class="release">
+        <div>
+          <p class="kicker">Release</p>
+          <h2>Toolkit release planned with the manuscript.</h2>
+        </div>
+        <div>
+          <p>Citation, DOI, and frozen artifacts will appear here once the paper is accepted. Until then this site documents
+          the methods exactly as they are implemented in the research toolkit, without overstating publication
+          status.</p>
+          <div class="hero-actions">
+            <a class="button" href="https://github.com/haasp1/med_taxonomizer">Open the toolkit repo</a>
+            <a class="button secondary" href="https://github.com/haasp1/med_taxonomizer/blob/main/docs/applying-to-your-data.md">Apply to your data</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <span>© Med Taxonomizer · Hannah Asperger · research toolkit for a paper in preparation</span>
+      <span>Open-source taxonomy induction · taxonomy review · full-corpus labeling</span>
+    </div>
+  </footer>
+</body>
+</html>

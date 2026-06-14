@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install Python dependencies
+        run: uv sync --extra dev
+      - name: Python tests
+        run: uv run pytest
+      - name: Ruff
+        run: uv run ruff check .
+      - name: Web install
+        working-directory: apps/web
+        run: npm ci
+      - name: Web build
+        working-directory: apps/web
+        run: npm run build

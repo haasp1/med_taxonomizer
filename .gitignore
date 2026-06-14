@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Private/local data and outputs
+data/
+scripts/data/
+private_data/
+raw_data/
+source_data/
+**/outputs/
+*.xlsx
+*.xls
+*.sav
+*.dta
+*.parquet
+*.feather
+*.sqlite
+*.db
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

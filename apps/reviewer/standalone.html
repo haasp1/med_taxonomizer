@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Med Taxonomizer Reviewer</title>
+  <style>
+    :root { color: #17212b; background: #f5f1ea; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; padding: 32px 0 56px; }
+    .hero, .status, .toolbar, .card { background: #fff; border: 1px solid #ded6c8; border-radius: 22px; }
+    .hero { padding: 32px; box-shadow: 0 22px 70px rgba(52,45,36,.09); }
+    .eyebrow { margin: 0 0 10px; color: #446c79; text-transform: uppercase; letter-spacing: .13em; font-size: 12px; font-weight: 700; }
+    h1 { margin: 0; font-size: clamp(34px, 6vw, 62px); line-height: .96; letter-spacing: -.05em; }
+    .lead { max-width: 760px; margin: 18px 0 0; color: #57616d; font-size: 18px; line-height: 1.55; }
+    .actions, .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 18px; }
+    button, .file-button { display: inline-flex; align-items: center; min-height: 42px; padding: 0 15px; border-radius: 999px; border: 1px solid #123c69; font: inherit; font-weight: 700; cursor: pointer; }
+    button.primary, .file-button { background: #123c69; color: #fff; }
+    button.secondary { background: #fff; color: #123c69; }
+    input[type="file"] { display: none; }
+    .status, .toolbar { padding: 14px 16px; color: #394656; }
+    .toolbar input { min-height: 38px; min-width: min(440px, 100%); border: 1px solid #d6cdbc; border-radius: 999px; padding: 0 14px; font: inherit; }
+    .list { display: grid; gap: 14px; margin-top: 16px; }
+    .card { padding: 20px; }
+    .head { display: flex; justify-content: space-between; gap: 16px; }
+    .id, .path { margin: 0; color: #6b7480; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    h2 { margin: 6px 0; font-size: 23px; }
+    .definition { color: #394656; line-height: 1.5; }
+    .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; color: #57616d; font-size: 14px; }
+    select, input, textarea { border: 1px solid #d6cdbc; border-radius: 12px; background: #fffdf9; color: #17212b; font: inherit; }
+    select { height: 40px; padding: 0 10px; }
+    .form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+    .form input, .form textarea { width: 100%; padding: 11px; }
+    textarea { min-height: 72px; resize: vertical; }
+    .wide { grid-column: 1 / -1; }
+    @media (max-width: 780px) { .head, .toolbar { display: grid; } .form, .meta { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <p class="eyebrow">Local taxonomy review</p>
+    <h1>Med Taxonomizer Reviewer</h1>
+    <p class="lead">A local browser tool for checking a taxonomy tree before full-corpus labeling. Files stay in this browser session unless you export a review CSV.</p>
+    <div class="actions">
+      <label class="file-button">Upload taxonomy JSON<input id="file" type="file" accept=".json,application/json" /></label>
+      <button class="secondary" id="export">Export review CSV</button>
+    </div>
+  </section>
+  <section class="status" id="status">Loaded synthetic example nodes. Upload a taxonomy JSON file to review your own tree locally.</section>
+  <section class="toolbar"><strong id="count"></strong><strong id="reviewed"></strong><input id="search" placeholder="Search label, path, or definition" /></section>
+  <section class="list" id="list"></section>
+</main>
+<script>
+const sampleNodes = [
+  { id: 'node-001', label: 'Bleeding complication', definition: 'Bleeding or hemorrhage described after a procedure or treatment.', path: 'complications/bleeding', parent: 'complications', support: '12' },
+  { id: 'node-002', label: 'Infectious complication', definition: 'Fever, suspected infection, or infection treatment mentioned in the text.', path: 'complications/infection', parent: 'complications', support: '8' }
+];
+let nodes = sampleNodes.map(withReviewFields);
+let query = '';
+function withReviewFields(node) { return { decision: '', newLabel: '', newDefinition: '', mergeInto: '', splitNotes: '', reviewerNotes: '', ...node }; }
+function stringify(value) { if (value === null || value === undefined) return ''; if (['string','number','boolean'].includes(typeof value)) return String(value); return JSON.stringify(value); }
+function pick(record, keys) { for (const key of keys) if (record[key] !== undefined && record[key] !== null && record[key] !== '') return stringify(record[key]); return ''; }
+function collect(value, out = []) { if (Array.isArray(value)) { value.forEach(v => collect(v, out)); return out; } if (!value || typeof value !== 'object') return out; const labelKeys = ['label','name','title','category','code']; const shapeKeys = ['node_id','id','path','definition','description','children']; if (labelKeys.some(k => k in value) && shapeKeys.some(k => k in value)) out.push(value); ['nodes','children','categories','subcategories','leaves','taxonomy'].forEach(k => { if (k in value) collect(value[k], out); }); return out; }
+function normalize(json) { return collect(json).map((record, index) => { const label = pick(record, ['label','name','title','category','code']); const path = pick(record, ['path','taxonomy_path','full_path','code']); return withReviewFields({ id: pick(record, ['node_id','id','stable_id','code']) || `node-${String(index + 1).padStart(3, '0')}`, label: label || path || `Node ${index + 1}`, definition: pick(record, ['definition','description','rationale']), path, parent: pick(record, ['parent','parent_id','parent_path','meta']), support: pick(record, ['support','provenance_count','count','n']) }); }); }
+function escapeCsv(value) { const s = String(value ?? '').replace(/\r?\n/g, ' '); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }
+function toCsv() { const header = ['node_id','current_label','current_definition','path','parent','support','decision','new_label','new_definition','merge_into_node_id','split_notes','reviewer_notes']; const rows = nodes.map(n => [n.id,n.label,n.definition,n.path,n.parent,n.support,n.decision,n.newLabel,n.newDefinition,n.mergeInto,n.splitNotes,n.reviewerNotes]); return [header, ...rows].map(r => r.map(escapeCsv).join(',')).join('\n') + '\n'; }
+function download(name, content) { const blob = new Blob([content], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+function update(id, key, value) { nodes = nodes.map(n => n.id === id ? { ...n, [key]: value } : n); render(); }
+function render() { const q = query.trim().toLowerCase(); const filtered = q ? nodes.filter(n => [n.id,n.label,n.definition,n.path,n.parent].join(' ').toLowerCase().includes(q)) : nodes; document.getElementById('count').textContent = `${nodes.length} nodes loaded`; document.getElementById('reviewed').textContent = `${nodes.filter(n => n.decision).length} reviewed`; document.getElementById('list').innerHTML = filtered.map(n => `<article class="card"><div class="head"><div><p class="id">${escapeHtml(n.id)}</p><h2>${escapeHtml(n.label)}</h2><p class="path">${escapeHtml(n.path || '')}</p></div><select onchange="update('${escapeJs(n.id)}','decision',this.value)"><option value="">Decision</option>${['approve','rename','merge','split','reject'].map(v => `<option value="${v}" ${n.decision === v ? 'selected' : ''}>${v}</option>`).join('')}</select></div><p class="definition">${escapeHtml(n.definition || 'No definition provided.')}</p><div class="meta"><span>Parent: ${escapeHtml(n.parent || 'none')}</span><span>Support: ${escapeHtml(n.support || 'not provided')}</span></div><div class="form"><input value="${escapeAttr(n.newLabel)}" oninput="update('${escapeJs(n.id)}','newLabel',this.value)" placeholder="New label if renamed" /><input value="${escapeAttr(n.mergeInto)}" oninput="update('${escapeJs(n.id)}','mergeInto',this.value)" placeholder="Merge into node ID" /><textarea oninput="update('${escapeJs(n.id)}','newDefinition',this.value)" placeholder="New or clarified definition">${escapeHtml(n.newDefinition)}</textarea><textarea oninput="update('${escapeJs(n.id)}','splitNotes',this.value)" placeholder="Split notes">${escapeHtml(n.splitNotes)}</textarea><textarea class="wide" oninput="update('${escapeJs(n.id)}','reviewerNotes',this.value)" placeholder="Reviewer notes">${escapeHtml(n.reviewerNotes)}</textarea></div></article>`).join(''); }
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escapeAttr(s) { return escapeHtml(s).replace(/"/g, '&quot;'); }
+function escapeJs(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+document.getElementById('file').addEventListener('change', async (event) => { const file = event.target.files[0]; if (!file) return; try { const loaded = normalize(JSON.parse(await file.text())); if (!loaded.length) throw new Error('No taxonomy-like nodes found'); nodes = loaded; document.getElementById('status').textContent = `Loaded ${loaded.length} nodes from ${file.name}.`; render(); } catch (error) { document.getElementById('status').textContent = `Could not load JSON: ${error.message}`; } });
+document.getElementById('export').addEventListener('click', () => download('taxonomy_review_queue.csv', toCsv()));
+document.getElementById('search').addEventListener('input', (event) => { query = event.target.value; render(); });
+window.update = update;
+render();
+</script>
+</body>
+</html>

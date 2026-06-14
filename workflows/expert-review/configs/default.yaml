@@ -1,0 +1,7 @@
+workflow: expert-review
+input:
+  taxonomy_path: workflows/taxonomy-induction/outputs/taxonomy.json
+review:
+  require_human_approval: true
+output:
+  directory: workflows/expert-review/outputs

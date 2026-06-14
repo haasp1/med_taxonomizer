@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated paper after publication."
+title: "Med Taxonomizer"
+authors:
+  - family-names: "Asperger"
+    given-names: "Hannah"
+version: "0.1.0"
+date-released: "2026-05-03"
