@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          cache-dependency-path: apps/reviewer/package-lock.json
       - name: Install Python dependencies
         run: uv sync --extra dev
       - name: Python tests
@@ -26,8 +26,8 @@ jobs:
       - name: Ruff
         run: uv run ruff check .
       - name: Web install
-        working-directory: apps/web
+        working-directory: apps/reviewer
         run: npm ci
       - name: Web build
-        working-directory: apps/web
+        working-directory: apps/reviewer
         run: npm run build

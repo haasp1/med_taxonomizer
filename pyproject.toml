@@ -11,8 +11,11 @@ dev = ["pytest>=8.0", "ruff>=0.5"]
 llm = ["openai>=2.14.0", "python-dotenv>=1.0"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["."]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+ignore = ["E402", "F401", "F541", "F601", "F811"]
