@@ -1,8 +1,11 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the associated paper after publication."
+message: "If you use this software, please cite the repository and the version or commit used."
 title: "Med Taxonomizer"
 authors:
   - family-names: "Asperger"
     given-names: "Hannah"
 version: "0.1.0"
-date-released: "2026-05-03"
+date-released: "2026-06-14"
+license: "MIT"
+repository-code: "https://github.com/haasp1/med_taxonomizer"
+url: "https://haasp1.github.io/med_taxonomizer/"

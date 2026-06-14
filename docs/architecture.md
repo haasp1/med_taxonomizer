@@ -12,8 +12,8 @@ The method layer describes the reproducible process used to move from free-text 
 
 ## Software layer
 
-- `lib/` provides shared Python helpers for taxonomy paths, model naming, data loading, and LLM requests.
-- `scripts/` provides the standard public entrypoints: create taxonomy, label records, and run the synthetic example.
+- `lib/` provides shared Python helpers for taxonomy paths, model naming, taxonomy trees, and LLM requests.
+- `scripts/` provides the standard public entrypoints: prepare text input, run the multi-phase taxonomy pipeline, and create optional review packets.
 - `apps/reviewer/` contains an optional local browser reviewer for taxonomy trees; it is not needed for the standard command-line workflow.
 
 ## Presentation layer
@@ -28,4 +28,4 @@ The method layer describes the reproducible process used to move from free-text 
 - Public-facing names should be self-contained; avoid internal manuscript numbering.
 - Source identifiers are ignored; generated internal IDs are not hashes or pseudonyms of source IDs.
 - Examples should be synthetic and understandable without access to the study context.
-- Outputs should be versioned, inspectable, and suitable for citation after release.
+- Outputs should be versioned, inspectable, and suitable for reproducible analysis.

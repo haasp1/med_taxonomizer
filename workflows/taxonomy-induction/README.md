@@ -1,37 +1,37 @@
 # Taxonomy induction workflow
 
-This workflow constructs candidate medical complication taxonomy nodes from free-text descriptions.
+This workflow constructs candidate medical taxonomy nodes from free-text descriptions and applies the resulting taxonomy through the phase pipeline.
 
 ## Public entrypoint
 
-Use this command from the repository root:
+Prepare a text-only parquet input:
 
 ```bash
-./scripts/create_taxonomy.sh --input path/to/data.csv --output-dir outputs
+uv run python scripts/prepare_texts.py \
+  --input path/to/free_text.csv \
+  --output data/inputs/texts.parquet \
+  --text-column text
 ```
 
-Then label records with:
+Run the pipeline from the repository root:
 
 ```bash
-./scripts/label_records.sh \
-  --input path/to/data.csv \
-  --taxonomy outputs/<taxonomy_run_id>/taxonomy_tree_draft.json \
-  --output-dir outputs
-```
-
-For a working synthetic run:
-
-```bash
-./scripts/run_example.sh
+./scripts/run_taxonomy_pipeline.sh \
+  --input data/inputs/texts.parquet \
+  --run-id my_run \
+  --model qwen/qwen3.5-27b \
+  --target clinical_events \
+  --domain-context "Clinical free-text fragments for taxonomy induction." \
+  --resume
 ```
 
 ## Purpose
 
-The goal is to turn heterogeneous phrases into a structured taxonomy and then apply that taxonomy to records as a label table. The workflow emphasizes transparent labels, concise definitions, aggregate provenance, generated internal IDs, and reproducible exports.
+The goal is to turn heterogeneous phrases into a structured taxonomy and then apply that taxonomy to records as a label table. The workflow emphasizes transparent labels, concise definitions, aggregate provenance, generated runtime IDs, and reproducible exports.
 
 ## Inputs
 
-Minimum input table:
+Minimum input table before preparation:
 
 ```text
 text
@@ -44,17 +44,14 @@ Source identifiers are ignored by design. Do not send source IDs, patient IDs, c
 
 ## Outputs
 
-Taxonomy runs write:
+Pipeline artifacts are written under:
 
-- `taxonomy_tree_draft.json`
-- `candidate_nodes.csv`
-- `run_metadata.json`
+```text
+scripts/data/runs/<run-id>/
+```
 
-Labeling runs write:
-
-- `labels.csv`
-- `label_run_metadata.json`
+Intermediate and final filenames depend on the phase and model provider. Use `docs/entrypoints.md` and the runner output for the active paths.
 
 ## Configuration
 
-See `configs/default.yaml` for the minimal synthetic configuration. The public command accepts `--text-column`, `--taxonomy-version`, and `--run-id` options. `--id-column` is deprecated and ignored.
+Use `--start-phase` and `--end-phase` to run a subset of phases. Use `--resume` to reuse completed artifacts where supported. Use `--base-url` for a local OpenAI-compatible model endpoint.

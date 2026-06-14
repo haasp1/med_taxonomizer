@@ -4,8 +4,6 @@
 
 The public repository contains code, prompts, documentation, a synthetic example, and a local reviewer. It does **not** include project datasets, run logs, internal notes, or paper-run artifacts.
 
-> Publication status: manuscript-linked research toolkit under preparation. Citation, DOI, and release artifacts will be updated when the paper is available.
-
 ## Install
 
 ```bash
@@ -132,8 +130,8 @@ If `uv` is unavailable but the local virtualenv exists:
 
 ## Citation
 
-Citation metadata is currently a placeholder and will be updated with the final manuscript details.
+If you use this software, cite the repository and the version or commit used for your analysis. Additional manuscript citation details can be added alongside the software citation when available.
 
 ## License
 
-License will be finalized before public release.
+MIT License. See [LICENSE](LICENSE).
