@@ -490,10 +490,6 @@
       </section>
 
       <aside class="manuscript" aria-label="Research toolkit summary">
-        <div class="manuscript-head">
-          <span class="doi">paper-support toolkit · release in preparation</span>
-          <span class="status">in preparation</span>
-        </div>
         <div class="manuscript-body">
           <h2>A reusable pipeline for discovering a taxonomy and labeling the full dataset.</h2>
           <p>The toolkit packages the core workflow: induce a staged taxonomy from free text, review the tree where needed,
@@ -501,8 +497,8 @@
           <div class="mini-table" aria-label="Project metadata">
             <div class="mini-row"><strong>Input</strong><span>Free-text fields, short notes, comments, or descriptions</span></div>
             <div class="mini-row"><strong>Output</strong><span>Versioned taxonomy tree + per-record labels + analysis table</span></div>
-            <div class="mini-row"><strong>Reference run</strong><span>Paper-facing taxonomy run with Qwen 3.5 27B</span></div>
-            <div class="mini-row"><strong>Paper focus</strong><span>Taxonomy induction, transparent labeling, and downstream analysis of free-text variables</span></div>
+            <div class="mini-row"><strong>Reference run</strong><span>Taxonomy-tree workflow with Qwen 3.5 27B</span></div>
+            <div class="mini-row"><strong>Method focus</strong><span>Taxonomy induction, transparent labeling, and downstream analysis of free-text variables</span></div>
             <div class="mini-row"><strong>Use case</strong><span>Make neglected free-text data measurable and analyzable</span></div>
           </div>
         </div>
@@ -557,7 +553,7 @@
           Multiple model runs are consolidated into a stable draft taxonomy, then reviewed, pruned, and exported as a versioned tree.
         </p>
         <p>
-          In the paper-facing workflow, an open-weight model such as <span class="num">Qwen 3.5 27B</span> can induce a
+          In the taxonomy-tree workflow, an open-weight model such as <span class="num">Qwen 3.5 27B</span> can induce a
           multi-level taxonomy directly from the corpus. The point is not that one fixed taxonomy is universal, but that the
           same process can be rerun for another dataset and clinical domain.
         </p>
@@ -617,7 +613,7 @@
       </div>
 
       <div class="phase-flow">
-        <h4>Stage I in detail · manuscript-style taxonomy pipeline with <code>qwen/qwen3.5-27b</code></h4>
+        <h4>Stage I in detail · taxonomy-tree pipeline with <code>qwen/qwen3.5-27b</code></h4>
         <p class="phase-cap">A bottom-up, consolidation-first taxonomy run. Each phase persists JSON artifacts so the pipeline
         is fully resumable and inspectable.</p>
         <div class="phases" aria-label="Nine phases of taxonomy induction">
@@ -697,7 +693,7 @@
 
         <div class="tax-card" aria-label="Taxonomy overview">
           <div class="tax-card-head">
-            <span>taxonomy_tree_final.json &middot; paper-facing hierarchy export</span>
+            <span>taxonomy_tree_final.json &middot; hierarchy export</span>
             <span>multi-level tree · derived from the user corpus</span>
           </div>
           <div class="tax-grid">
@@ -866,7 +862,7 @@
           <div class="legend">
             <span><i style="background: linear-gradient(90deg, #b03a48, #c79a2a)"></i>Do before scaling</span>
             <span><i style="background: linear-gradient(90deg, #2e8a99, #6f8162)"></i>Optional reviewed sample</span>
-            <span><i style="background: linear-gradient(90deg, #3b6ca4, #2e8a99)"></i>Paper provenance analysis</span>
+            <span><i style="background: linear-gradient(90deg, #3b6ca4, #2e8a99)"></i>Provenance analysis</span>
           </div>
         </div>
 
