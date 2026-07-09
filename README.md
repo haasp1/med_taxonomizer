@@ -1,5 +1,7 @@
 # Med Taxonomizer
 
+[![DOI](https://zenodo.org/badge/1227985820.svg)](https://doi.org/10.5281/zenodo.21275129)
+
 **Med Taxonomizer** is a research toolkit for inducing a reusable medical taxonomy from free-text records, reviewing the taxonomy locally, and applying it in a structured labeling workflow.
 
 The public repository contains code, prompts, documentation, a synthetic example, and a local reviewer. It does **not** include project datasets, run logs, internal notes, or paper-run artifacts.
