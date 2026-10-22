@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 - AACT demonstration and configurable inputs (unreleased)
+## 1.1.0 - 2026-10-22
 
 ### Added
 

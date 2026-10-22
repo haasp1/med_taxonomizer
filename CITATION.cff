@@ -5,6 +5,7 @@ authors:
   - family-names: "Asperger"
     given-names: "Hannah"
 version: "1.1.0"
+date-released: "2026-10-22"
 license: "MIT"
 repository-code: "https://github.com/haasp1/med_taxonomizer"
 url: "https://haasp1.github.io/med_taxonomizer/"
