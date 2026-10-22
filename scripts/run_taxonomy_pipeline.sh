@@ -31,7 +31,7 @@ Usage:
 
 Options:
   --model MODEL                Model for phases 00-03, 05-07 (default: openai/gpt-4o)
-  --input PATH                 Parquet file with a text column for Phase 00
+  --input PATH                 Parquet file with a text column (phases 00, 02, 04)
   --taxonomy-model MODEL       Taxonomy model consumed by phases 04-07 (default: --model)
   --labeling-model MODEL       Labeling model for phase 04/05/06/07 (default: Qwen 27B -> Qwen 9B, otherwise --model)
   --tree-model MODEL           Phase 08/09 tree model (default: --model)
@@ -241,6 +241,7 @@ build_phase_command() {
     "02")
       PHASE_CMD=(
         uv run python "${EXPERIMENT_DIR}/phase_02_category_discovery.py"
+        --input "$INPUT_DATA"
         --model "$MODEL"
       )
       if [[ -n "$DOMAIN_CONTEXT" ]]; then
@@ -275,6 +276,7 @@ build_phase_command() {
     "04")
       PHASE_CMD=(
         uv run python "${EXPERIMENT_DIR}/phase_04_labeling.py"
+        --input "$INPUT_DATA"
         --model "$LABELING_MODEL"
         --taxonomy-model "$TAXONOMY_MODEL"
       )

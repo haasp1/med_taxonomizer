@@ -368,7 +368,7 @@ def make_openai_client(base_url: str | None = None, api_key: str | None = None, 
     """Create an OpenAI client, either for OpenRouter or a local server.
 
     Args:
-        base_url: Custom base URL (e.g. http://192.168.0.70:1234/v1 for LM Studio).
+        base_url: Custom base URL (e.g. http://localhost:1234/v1 for LM Studio).
                   If None, uses OpenRouter.
         api_key: API key. For local servers defaults to "lm-studio".
         async_client: If True return AsyncOpenAI, else OpenAI.

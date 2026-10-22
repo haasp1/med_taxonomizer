@@ -25,6 +25,8 @@ private_data/
 raw_data/
 source_data/
 **/outputs/
+logs/
+notes/
 *.xlsx
 *.xls
 *.sav

@@ -1,0 +1,841 @@
+{
+  "domain_context": "Free-text entries from public clinical trial documentation.",
+  "target": "adverse_events",
+  "model": "qwen/qwen3.5-27b",
+  "max_children": 5,
+  "metas": [
+    {
+      "meta": "adverse_events",
+      "roots": [
+        "cardiovascular",
+        "neurological",
+        "gastrointestinal",
+        "musculoskeletal",
+        "infections",
+        "respiratory",
+        "hematologic",
+        "skin_subcutaneous",
+        "metabolic_renal",
+        "neoplasms",
+        "general_disorders",
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "cardiovascular/myocardial_ischemia_infarction",
+          "description": "Events involving coronary blood flow reduction or heart muscle death (e.g., MI, Ischemia, Angina, Occlusion).",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/arrhythmias",
+          "description": "Electrical disturbances affecting heart rate or rhythm (e.g., SVT, Atrial Fibrillation, Bradycardia, Tachycardia).",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/vascular_complications",
+          "description": "Issues affecting blood vessel integrity, patency, or devices (e.g., Thrombosis, Dissection, Embolism, Stent Thrombosis, Rupture).",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/heart_failure_hemodynamics",
+          "description": "Pump failure or systemic circulatory instability (e.g., Heart Failure, Cardiogenic Shock, Hemodynamic AE).",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/other",
+          "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke).",
+          "children": []
+        },
+        {
+          "code": "cardiovascular",
+          "description": "New onset or trial-related events affecting the heart, blood vessels, and circulation (e.g., Myocardial Infarction, Arrhythmia, Heart Failure). Excludes baseline cardiovascular conditions.",
+          "children": [
+            "cardiovascular/myocardial_ischemia_infarction",
+            "cardiovascular/arrhythmias",
+            "cardiovascular/vascular_complications",
+            "cardiovascular/heart_failure_hemodynamics",
+            "cardiovascular/other"
+          ]
+        },
+        {
+          "code": "neurological/cerebrovascular",
+          "description": "Events involving blood flow disruption or vascular injury to the brain (e.g., Stroke, TIA, Infarction).",
+          "children": []
+        },
+        {
+          "code": "neurological/seizure_disorders",
+          "description": "Convulsive activity and epileptic conditions resulting from abnormal electrical activity (e.g., Seizure, Convulsion, Epilepsy).",
+          "children": []
+        },
+        {
+          "code": "neurological/motor_sensory_dysfunction",
+          "description": "Functional impairments affecting movement, sensation, coordination, or nerve conduction excluding vascular causes (e.g., Paralysis, Neuropathy, Weakness, Tremor).",
+          "children": []
+        },
+        {
+          "code": "neurological/cognitive_psychiatric",
+          "description": "Alterations in consciousness, cognition, mood, or behavior (e.g., Delirium, Depression, Encephalopathy, Psychomotor).",
+          "children": []
+        },
+        {
+          "code": "neurological/other",
+          "description": "Remaining neurological adverse events including headaches, infections, structural abnormalities, and inflammatory conditions.",
+          "children": []
+        },
+        {
+          "code": "neurological",
+          "description": "New onset or trial-related events affecting the brain, spinal cord, nerves, and mental health (e.g., Stroke, Headache, Seizure). Excludes baseline neurological conditions.",
+          "children": [
+            "neurological/cerebrovascular",
+            "neurological/seizure_disorders",
+            "neurological/motor_sensory_dysfunction",
+            "neurological/cognitive_psychiatric",
+            "neurological/other"
+          ]
+        },
+        {
+          "code": "gastrointestinal/hemorrhage",
+          "description": "Active bleeding or hemorrhage within the GI tract (e.g., UGI bleed, Hematochezia)",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal/functional_symptoms",
+          "description": "Disorders of movement, secretion, or sensation (e.g., Nausea, Vomiting, Diarrhea, Constipation, Pain, Bloating)",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal/inflammatory_infectious",
+          "description": "Inflammatory, infectious, or mucosal damage conditions (e.g., Gastritis, Colitis, Pancreatitis, Ulcers)",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal/structural_mechanical",
+          "description": "Mechanical integrity failures or obstructions (e.g., Perforation, Fistula, Obstruction, Gangrene)",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal/other",
+          "description": "Unclassified GI events, vascular issues, ascites, or non-matching adverse events",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal",
+          "description": "New onset or trial-related events affecting the digestive system, liver, and biliary tract (e.g., Nausea, Vomiting, Diarrhea, Ulcer). Excludes baseline GI conditions.",
+          "children": [
+            "gastrointestinal/hemorrhage",
+            "gastrointestinal/functional_symptoms",
+            "gastrointestinal/inflammatory_infectious",
+            "gastrointestinal/structural_mechanical",
+            "gastrointestinal/other"
+          ]
+        },
+        {
+          "code": "musculoskeletal/fractures",
+          "description": "Bone breaks including pathological, traumatic, and site-specific fractures.",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal/pain",
+          "description": "Symptomatic reports of discomfort, ache, or pain without confirmed structural diagnosis.",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal/muscle_tendon_disorders",
+          "description": "Pathologies affecting muscle function and tendon integrity (e.g., myopathy, spasm, tendinosis).",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal/joint_soft_tissue_disorders",
+          "description": "Inflammation, swelling, or structural issues of joints and adjacent soft tissue.",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal/other",
+          "description": "Residual MSK events including deformities, mobility issues, and complex outcomes.",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal",
+          "description": "New onset or trial-related events affecting bones, joints, muscles, and connective tissue (e.g., Fracture, Arthritis, Back Pain). Excludes baseline musculoskeletal conditions.",
+          "children": [
+            "musculoskeletal/fractures",
+            "musculoskeletal/pain",
+            "musculoskeletal/muscle_tendon_disorders",
+            "musculoskeletal/joint_soft_tissue_disorders",
+            "musculoskeletal/other"
+          ]
+        },
+        {
+          "code": "infections/bloodstream_sepsis",
+          "description": "Systemic infections involving the blood or resulting in septic shock (e.g., Sepsis, Bacteremia, Candidemia).",
+          "children": []
+        },
+        {
+          "code": "infections/skin_surgical_site",
+          "description": "Infections localized to skin, soft tissue, wounds, or surgical/device sites (e.g., Cellulitis, Abscess, Catheter, Incision).",
+          "children": []
+        },
+        {
+          "code": "infections/respiratory_tract",
+          "description": "Infections affecting the upper or lower respiratory tract and ENT structures (e.g., Pneumonia, Influenza, URI).",
+          "children": []
+        },
+        {
+          "code": "infections/gastrointestinal_internal",
+          "description": "Localized infections of internal organs excluding skin/respiratory/bloodstream (e.g., GI tract, Genitourinary, Mastitis, Otitis).",
+          "children": []
+        },
+        {
+          "code": "infections/other",
+          "description": "Miscellaneous or unspecified infections not fitting above categories, including pathogen-specific classifications.",
+          "children": []
+        },
+        {
+          "code": "infections",
+          "description": "New onset events caused by infectious agents or pathogens (e.g., Sepsis, Pneumonia, UTI). Excludes baseline infectious conditions.",
+          "children": [
+            "infections/bloodstream_sepsis",
+            "infections/skin_surgical_site",
+            "infections/respiratory_tract",
+            "infections/gastrointestinal_internal",
+            "infections/other"
+          ]
+        },
+        {
+          "code": "respiratory",
+          "description": "New onset or trial-related events affecting the lungs, airways, and breathing (e.g., Respiratory Failure, Dyspnea). Excludes baseline respiratory conditions.",
+          "children": []
+        },
+        {
+          "code": "hematologic/hemorrhage_bleeding",
+          "description": "Events characterized by blood loss, hemorrhage, hematoma, or vascular leakage.",
+          "children": []
+        },
+        {
+          "code": "hematologic/thrombosis_embolism",
+          "description": "Events involving abnormal clotting, embolism, vessel occlusion, or obstruction.",
+          "children": []
+        },
+        {
+          "code": "hematologic/blood_cell_disorders",
+          "description": "Abnormalities in blood cell counts, types, or function including anemia and cytopenias.",
+          "children": []
+        },
+        {
+          "code": "hematologic/transfusion_reactions",
+          "description": "Adverse events specifically resulting from blood product administration.",
+          "children": []
+        },
+        {
+          "code": "hematologic/other",
+          "description": "Hematologic adverse events not fitting specific mechanisms or unclassified endpoints.",
+          "children": []
+        },
+        {
+          "code": "hematologic",
+          "description": "New onset events related to blood disorders, coagulation, and blood counts (e.g., Hemorrhage, Thrombocytopenia). Excludes baseline hematologic conditions.",
+          "children": [
+            "hematologic/hemorrhage_bleeding",
+            "hematologic/thrombosis_embolism",
+            "hematologic/blood_cell_disorders",
+            "hematologic/transfusion_reactions",
+            "hematologic/other"
+          ]
+        },
+        {
+          "code": "skin_subcutaneous/rash_and_inflammation",
+          "description": "Inflammatory, allergic, or immune-mediated skin reactions characterized by redness, itching, or eruption (e.g., drug eruption, urticaria, pruritus).",
+          "children": []
+        },
+        {
+          "code": "skin_subcutaneous/procedure_site_complications",
+          "description": "Adverse events localized to injection, implant, incision, catheter, or device sites (e.g., pain, hematoma, extravasation, dehiscence).",
+          "children": []
+        },
+        {
+          "code": "skin_subcutaneous/masses_and_fluid_accumulation",
+          "description": "Structural abnormalities and fluid accumulations not strictly tied to a procedural wound (e.g., cysts, lumps, lymphedema, edema, seroma).",
+          "children": []
+        },
+        {
+          "code": "skin_subcutaneous/ulcers_and_skin_integrity",
+          "description": "Loss of skin integrity, necrosis, bleeding, or specific surface abnormalities (e.g., ulcers, necrotizing fasciitis, petechiae, skin hemorrhage).",
+          "children": []
+        },
+        {
+          "code": "skin_subcutaneous/other",
+          "description": "Unspecified skin conditions, mucosal inflammation, or miscellaneous symptoms not fitting primary structural categories.",
+          "children": []
+        },
+        {
+          "code": "skin_subcutaneous",
+          "description": "New onset or trial-related events affecting the skin and underlying tissue (e.g., Rash, Hematoma). Excludes baseline dermatological conditions.",
+          "children": [
+            "skin_subcutaneous/rash_and_inflammation",
+            "skin_subcutaneous/procedure_site_complications",
+            "skin_subcutaneous/masses_and_fluid_accumulation",
+            "skin_subcutaneous/ulcers_and_skin_integrity",
+            "skin_subcutaneous/other"
+          ]
+        },
+        {
+          "code": "metabolic_renal",
+          "description": "New onset or trial-related events related to metabolism, electrolytes, kidney function, and abnormal laboratory findings (e.g., Renal Failure, Elevated Enzymes). Excludes baseline metabolic conditions.",
+          "children": []
+        },
+        {
+          "code": "neoplasms",
+          "description": "New onset events related to benign or malignant tumors and cancer (e.g., Carcinoma, Metastasis). Excludes baseline cancer diagnoses.",
+          "children": []
+        },
+        {
+          "code": "general_disorders/administration_site_reactions",
+          "description": "Localized reactions at treatment access points including injection, catheter, or incision sites.",
+          "children": []
+        },
+        {
+          "code": "general_disorders/systemic_symptoms",
+          "description": "Non-localized physiological disturbances affecting whole-body status such as fatigue, temperature, or weight.",
+          "children": []
+        },
+        {
+          "code": "general_disorders/vital_outcomes",
+          "description": "Critical life-status events including mortality, late death, and shock states.",
+          "children": []
+        },
+        {
+          "code": "general_disorders/pain_discomfort",
+          "description": "Generalized or non-organ-specific pain sensations and discomfort levels.",
+          "children": []
+        },
+        {
+          "code": "general_disorders/other",
+          "description": "Catch-all for remaining general disorders not fitting primary buckets, including allergies and lab abnormalities.",
+          "children": []
+        },
+        {
+          "code": "general_disorders",
+          "description": "New onset non-specific systemic symptoms, administration site conditions, and vital outcomes not tied to a specific organ system (e.g., Fatigue, Pain, Injection Site Reaction, Death).",
+          "children": [
+            "general_disorders/administration_site_reactions",
+            "general_disorders/systemic_symptoms",
+            "general_disorders/vital_outcomes",
+            "general_disorders/pain_discomfort",
+            "general_disorders/other"
+          ]
+        },
+        {
+          "code": "other/device_procedure_complications",
+          "description": "Adverse events related to medical devices, implants, surgical procedures, vaccinations, or access site complications.",
+          "children": []
+        },
+        {
+          "code": "other/ocular_disorders",
+          "description": "Conditions affecting the eye and visual apparatus not covered by neurological or skin categories.",
+          "children": []
+        },
+        {
+          "code": "other/reproductive_genitourinary_disorders",
+          "description": "Disorders affecting reproductive organs and urinary tract structures, excluding neoplasms and renal metabolic issues.",
+          "children": []
+        },
+        {
+          "code": "other/external_trauma_injuries",
+          "description": "Adverse events resulting from external forces, physical trauma, accidents, assault, or environmental exposure.",
+          "children": []
+        },
+        {
+          "code": "other/other",
+          "description": "Unclassifiable adverse events, general descriptors, definitions, or rare conditions not fitting specific subcategories.",
+          "children": []
+        },
+        {
+          "code": "other",
+          "description": "Adverse events that do not fit into the specified system organ classes or are unclassifiable.",
+          "children": [
+            "other/device_procedure_complications",
+            "other/ocular_disorders",
+            "other/reproductive_genitourinary_disorders",
+            "other/external_trauma_injuries",
+            "other/other"
+          ]
+        }
+      ]
+    },
+    {
+      "meta": "interventions",
+      "roots": [
+        "pharmacological",
+        "device",
+        "procedure",
+        "behavioral",
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "pharmacological",
+          "description": "Substances administered to participants, including drugs, biologics, placebos, supplements, fluids, and radiopharmaceuticals.",
+          "children": []
+        },
+        {
+          "code": "device/stents",
+          "description": "Intravascular scaffolds including bare-metal, drug-eluting, and bioresorbable varieties used for arterial support.",
+          "children": []
+        },
+        {
+          "code": "device/catheters_balloons",
+          "description": "Interventional delivery tools, dilatation balloons, aspiration catheters, and closure devices.",
+          "children": []
+        },
+        {
+          "code": "device/implantable_systems",
+          "description": "Internal structural replacements, active assist devices, and prosthetics such as joint replacements, occluders, and LVADs.",
+          "children": []
+        },
+        {
+          "code": "device/imaging_monitoring",
+          "description": "Diagnostic equipment, intraoperative visualization, external monitoring systems, and respiratory support devices.",
+          "children": []
+        },
+        {
+          "code": "device/other",
+          "description": "Catch-all for unspecified devices, software, wearables, wound care, and non-fitting interventions.",
+          "children": []
+        },
+        {
+          "code": "device",
+          "description": "Medical hardware, implants, instruments, or equipment used, implanted, or provided to participants as treatment.",
+          "children": [
+            "device/stents",
+            "device/catheters_balloons",
+            "device/implantable_systems",
+            "device/imaging_monitoring",
+            "device/other"
+          ]
+        },
+        {
+          "code": "procedure/cardiac_surgery",
+          "description": "Open surgical procedures involving the heart and great vessels, including bypass, valve replacement, and transplant.",
+          "children": []
+        },
+        {
+          "code": "procedure/cardiovascular_intervention",
+          "description": "Minimally invasive catheter-based procedures for coronary or vascular treatment, such as PCI, angioplasty, and stenting.",
+          "children": []
+        },
+        {
+          "code": "procedure/general_surgery",
+          "description": "Invasive surgical procedures outside the cardiovascular system, including orthopedics, ENT, soft tissue, and non-cardiac vascular surgeries.",
+          "children": []
+        },
+        {
+          "code": "procedure/diagnostic_procedures",
+          "description": "Procedural diagnostic actions primarily for visualization or functional measurement, such as angiography, colonoscopy, manometry, and guided imaging.",
+          "children": []
+        },
+        {
+          "code": "procedure/other",
+          "description": "Catch-all for unspecified procedures, supportive care, resuscitation, access routes, or device insertions not covered by therapeutic or diagnostic categories.",
+          "children": []
+        },
+        {
+          "code": "procedure",
+          "description": "Surgeries, invasive techniques, clinical actions, or interventional methods performed by healthcare providers.",
+          "children": [
+            "procedure/cardiac_surgery",
+            "procedure/cardiovascular_intervention",
+            "procedure/general_surgery",
+            "procedure/diagnostic_procedures",
+            "procedure/other"
+          ]
+        },
+        {
+          "code": "behavioral",
+          "description": "Non-pharmaceutical, non-device therapies involving patient behavior, lifestyle modifications, education, counseling, or psychological interventions.",
+          "children": []
+        },
+        {
+          "code": "other",
+          "description": "Interventions that do not fit into the above categories, unspecified interventions, or administrative items.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "meta": "study_design",
+      "roots": [
+        "randomization",
+        "eligibility_criteria",
+        "protocol_details",
+        "trial_operations",
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "randomization",
+          "description": "Details regarding participant assignment, treatment arms, blinding, or randomization methods.",
+          "children": []
+        },
+        {
+          "code": "eligibility_criteria",
+          "description": "Inclusion/exclusion criteria, patient selection requirements, demographic thresholds, or staging requirements for participation.",
+          "children": []
+        },
+        {
+          "code": "protocol_details/intervention_procedures",
+          "description": "Specific medical interventions, surgical techniques, device usage, dosing administration, and therapeutic actions planned in the protocol.",
+          "children": []
+        },
+        {
+          "code": "protocol_details/endpoint_definitions",
+          "description": "Definitions of primary/secondary outcomes, event adjudication criteria, scoring algorithms, measurement specifications, and standards.",
+          "children": []
+        },
+        {
+          "code": "protocol_details/study_timeline",
+          "description": "Visit schedules, dosing intervals, observation periods, follow-up windows, procedure durations, and time-based demarcations.",
+          "children": []
+        },
+        {
+          "code": "protocol_details/protocol_adherence",
+          "description": "Rules regarding compliance, deviations, violations, stopping criteria, non-adherence records, and reasons for non-conformance.",
+          "children": []
+        },
+        {
+          "code": "protocol_details/other",
+          "description": "Miscellaneous protocol details, statistical analysis plans, general notes, or study design elements not fitting specific functional categories.",
+          "children": []
+        },
+        {
+          "code": "protocol_details",
+          "description": "Specific planned procedures, dosing schedules, intervention descriptions, measurement definitions, endpoint definitions, and visit timing.",
+          "children": [
+            "protocol_details/intervention_procedures",
+            "protocol_details/endpoint_definitions",
+            "protocol_details/study_timeline",
+            "protocol_details/protocol_adherence",
+            "protocol_details/other"
+          ]
+        },
+        {
+          "code": "trial_operations/participant_withdrawal",
+          "description": "Events where participants discontinue, withdraw consent, refuse treatment, or meet withdrawal criteria.",
+          "children": []
+        },
+        {
+          "code": "trial_operations/site_operations",
+          "description": "Administrative, logistical, or site-level events including closures, supply issues, holds, and sponsor directives.",
+          "children": []
+        },
+        {
+          "code": "trial_operations/participant_adherence",
+          "description": "Subject adherence to prescribed regimens, medication intake, and scheduled study visits (including missed appointments).",
+          "children": []
+        },
+        {
+          "code": "trial_operations/protocol_deviations",
+          "description": "Errors in study execution involving incorrect procedures, data collection failures, or administration errors.",
+          "children": []
+        },
+        {
+          "code": "trial_operations/other",
+          "description": "Unclassified operational text, data analysis notes, or administrative details not fitting specific event types.",
+          "children": []
+        },
+        {
+          "code": "trial_operations",
+          "description": "Dynamic execution and administrative events including participant withdrawals, discontinuations, adherence, compliance, protocol deviations, missed visits, and site closures.",
+          "children": [
+            "trial_operations/participant_withdrawal",
+            "trial_operations/site_operations",
+            "trial_operations/participant_adherence",
+            "trial_operations/protocol_deviations",
+            "trial_operations/other"
+          ]
+        },
+        {
+          "code": "other",
+          "description": "Administrative notes, definitions, missing data, or miscellaneous content not fitting other specific categories (e.g., Titles, vague terms, general population descriptions).",
+          "children": []
+        }
+      ]
+    },
+    {
+      "meta": "conditions",
+      "roots": [
+        "cardiovascular",
+        "oncology",
+        "infectious",
+        "neurological",
+        "psychiatric",
+        "gastrointestinal",
+        "respiratory",
+        "musculoskeletal",
+        "metabolic",
+        "hematologic",
+        "genitourinary",
+        "dermatological",
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "cardiovascular/coronary_artery_disease",
+          "description": "Conditions involving coronary arteries, ischemia, infarction history, and related stenosis.",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/heart_failure",
+          "description": "Impaired pumping function of the heart, including cardiomyopathy, ventricular dysfunction, and CHF.",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/vascular_hypertension",
+          "description": "Systemic vascular diseases and blood pressure disorders including PAD, aneurysms, and hypertension.",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/valvular_structural",
+          "description": "Pathologies of cardiac valves, pericardial disease, and structural calcifications.",
+          "children": []
+        },
+        {
+          "code": "cardiovascular/other",
+          "description": "Miscellaneous cardiovascular conditions including arrhythmias, thromboembolism, and procedural complications.",
+          "children": []
+        },
+        {
+          "code": "cardiovascular",
+          "description": "Baseline conditions affecting the heart, blood vessels, and circulation (e.g., CAD, MI, hypertension). Excludes new onset events.",
+          "children": [
+            "cardiovascular/coronary_artery_disease",
+            "cardiovascular/heart_failure",
+            "cardiovascular/vascular_hypertension",
+            "cardiovascular/valvular_structural",
+            "cardiovascular/other"
+          ]
+        },
+        {
+          "code": "oncology/solid_malignancies",
+          "description": "Invasive carcinomas, sarcomas, and solid tumors across all organ systems including CNS",
+          "children": []
+        },
+        {
+          "code": "oncology/hematologic_malignancies",
+          "description": "Cancers of the blood, bone marrow, and lymphatic system (e.g., Leukemia, Lymphoma)",
+          "children": []
+        },
+        {
+          "code": "oncology/benign_neoplasms",
+          "description": "Non-malignant growths including adenomas, polyps, and hyperplasia",
+          "children": []
+        },
+        {
+          "code": "oncology/premalignant_lesions",
+          "description": "Precancerous conditions such as dysplasia and carcinoma in situ",
+          "children": []
+        },
+        {
+          "code": "oncology/other",
+          "description": "Unspecified, rare, or mixed oncological conditions not fitting primary pathological groups",
+          "children": []
+        },
+        {
+          "code": "oncology",
+          "description": "Baseline malignant and benign neoplasms, cancers, and tumors (e.g., Lung cancer, Lymphoma). Excludes new onset tumors.",
+          "children": [
+            "oncology/solid_malignancies",
+            "oncology/hematologic_malignancies",
+            "oncology/benign_neoplasms",
+            "oncology/premalignant_lesions",
+            "oncology/other"
+          ]
+        },
+        {
+          "code": "infectious",
+          "description": "Baseline conditions caused by pathogenic organisms (e.g., Sepsis, Pneumonia). Excludes new onset infections.",
+          "children": []
+        },
+        {
+          "code": "neurological",
+          "description": "Baseline conditions affecting the nervous system (e.g., Stroke, Neuralgia, Seizure). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "psychiatric",
+          "description": "Baseline mental and behavioral health conditions (e.g., Depression, Anxiety). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "gastrointestinal",
+          "description": "Baseline conditions affecting the digestive tract and associated organs (e.g., Liver, Pancreas, Cirrhosis). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "respiratory",
+          "description": "Baseline conditions affecting the lungs and airways (e.g., COPD, Asthma). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "musculoskeletal",
+          "description": "Baseline conditions affecting bones, muscles, joints, and connective tissue (e.g., Arthritis). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "metabolic",
+          "description": "Baseline conditions affecting metabolism, hormones, and biochemical processes (e.g., Diabetes, Lipid disorders). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "hematologic",
+          "description": "Baseline conditions affecting blood and blood-forming organs (e.g., Anemia, Coagulation disorders). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "genitourinary",
+          "description": "Baseline disorders of the kidney, bladder, urinary system, and reproductive organs (e.g., Renal failure, Kidney stones). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "dermatological",
+          "description": "Baseline conditions of the skin and subcutaneous tissue (e.g., Rashes, Cysts). Excludes new onset events.",
+          "children": []
+        },
+        {
+          "code": "other",
+          "description": "Conditions not fitting into the above systems, mixed, unspecified diagnoses, or non-condition states.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "meta": "outcomes",
+      "roots": [
+        "clinical_endpoints",
+        "safety_outcome",
+        "quantitative_measure",
+        "patient_reported_outcome",
+        "disease_status",
+        "procedural_outcome",
+        "retention_metrics",
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "clinical_endpoints/mortality_survival",
+          "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+          "children": []
+        },
+        {
+          "code": "clinical_endpoints/composite_endpoints",
+          "description": "Aggregated efficacy metrics combining multiple clinical events (e.g., MACE, MACCE, TLF).",
+          "children": []
+        },
+        {
+          "code": "clinical_endpoints/discrete_clinical_events",
+          "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+          "children": []
+        },
+        {
+          "code": "clinical_endpoints/quantitative_imaging_metrics",
+          "description": "Continuous measurements derived from imaging, biomarkers, or disease activity scores.",
+          "children": []
+        },
+        {
+          "code": "clinical_endpoints/other",
+          "description": "Miscellaneous endpoints including functional status, device performance, or undefined metrics.",
+          "children": []
+        },
+        {
+          "code": "clinical_endpoints",
+          "description": "Study endpoints, efficacy metrics, and composite health occurrences (e.g., MACE, Survival). Excludes specific event names (which belong to adverse_events).",
+          "children": [
+            "clinical_endpoints/mortality_survival",
+            "clinical_endpoints/composite_endpoints",
+            "clinical_endpoints/discrete_clinical_events",
+            "clinical_endpoints/quantitative_imaging_metrics",
+            "clinical_endpoints/other"
+          ]
+        },
+        {
+          "code": "safety_outcome",
+          "description": "Endpoints focused on harm monitoring, adverse event incidence, tolerability, or treatment discontinuation due to safety.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure/laboratory_values",
+          "description": "Biochemical, hematological, and molecular analytes measured via lab assays.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure/imaging_metrics",
+          "description": "Quantitative structural dimensions, volumes, and metrics derived from medical imaging.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure/physiological_parameters",
+          "description": "Vital signs, hemodynamics, anthropometrics, and functional capacity measurements.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure/resource_utilization",
+          "description": "Healthcare consumption metrics related to time, cost, and procedural administration.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure/other",
+          "description": "Composite scores, survival rates, and miscellaneous quantitative measures not fitting primary modalities.",
+          "children": []
+        },
+        {
+          "code": "quantitative_measure",
+          "description": "Continuous or ordinal biological, physical, or laboratory measurements (e.g., Lab Values, Imaging metrics, Physiological parameters).",
+          "children": [
+            "quantitative_measure/laboratory_values",
+            "quantitative_measure/imaging_metrics",
+            "quantitative_measure/physiological_parameters",
+            "quantitative_measure/resource_utilization",
+            "quantitative_measure/other"
+          ]
+        },
+        {
+          "code": "patient_reported_outcome",
+          "description": "Subjective assessments of health status, quality of life, symptoms, or functional status measured via scales.",
+          "children": []
+        },
+        {
+          "code": "disease_status",
+          "description": "Measures of disease progression, staging, remission, or recurrence status.",
+          "children": []
+        },
+        {
+          "code": "procedural_outcome",
+          "description": "Technical performance, duration, adherence, or operational metrics related to the intervention procedure.",
+          "children": []
+        },
+        {
+          "code": "retention_metrics",
+          "description": "Administrative and study flow outcomes including retention rates, withdrawal rates, and protocol adherence metrics.",
+          "children": []
+        },
+        {
+          "code": "other",
+          "description": "Outcomes that do not fit into the primary categories, including interventions, administrative text, or ambiguous entries.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "meta": "other",
+      "roots": [
+        "other"
+      ],
+      "nodes": [
+        {
+          "code": "other",
+          "description": "Catch-all for unclassifiable samples.",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

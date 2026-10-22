@@ -259,7 +259,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help="Model to use")
     parser.add_argument("--concurrency", type=int, default=None, help="Parallel API calls (defaults: Qwen 27B=8, Qwen 9B=20, otherwise 10; local=1)")
     parser.add_argument("--resume", action="store_true", help="Reuse existing per-seed meta discovery runs")
-    parser.add_argument("--base-url", type=str, default=None, help="Custom API base URL (e.g. http://192.168.0.70:1234/v1 for LM Studio)")
+    parser.add_argument("--base-url", type=str, default=None, help="Custom API base URL (e.g. http://localhost:1234/v1 for LM Studio)")
     parser.add_argument("--run-id", type=str, default=None, help="Optional run id for isolated artifacts under data/runs/<run_id>/")
     parser.add_argument("--request-timeout-seconds", type=float, default=DEFAULT_REQUEST_TIMEOUT_SECONDS, help="Per-attempt timeout for a single request")
 

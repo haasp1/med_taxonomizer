@@ -1,0 +1,66 @@
+# Qwen 3.5 settings used for the reported study runs (hosted, OpenRouter).
+# Documentation only: the pipeline does not read this file. Values mirror the
+# constants in scripts/phase_*.py and lib/; see docs/qwen-configuration.md.
+endpoint:
+  type: openrouter
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+  extra_body:
+    provider:
+      zdr: true            # zero-data-retention routing, sent on every request
+models:
+  taxonomy: qwen/qwen3.5-27b        # phases 00-03, 05-09 (--model)
+  labeling: qwen/qwen3.5-9b         # phase 04 (--labeling-model default for a 27B run)
+sampling:
+  phases_00_03:
+    temperature: 0.6
+    reasoning: {effort: high}       # sent in extra_body
+  phase_04_labeling:
+    temperature: 0.6
+    top_p: 0.95
+    top_k: 20                       # sent in extra_body
+    presence_penalty: 1.5
+  phase_05_review_other:
+    temperature: 0.6
+    top_p: 0.95
+    top_k: 20
+    presence_penalty: 1.5
+  phases_06_07:
+    temperature: 0.8
+    top_p: 0.95
+    top_k: 20
+    presence_penalty: 1.5
+  phase_08_tree_consolidation:
+    temperature: 0.8
+    top_p: 0.95
+    top_k: 20
+    presence_penalty: 1.5
+    reasoning: {effort: xhigh}
+  phase_09_ambiguity_pruning:
+    temperature: 0.6
+  max_tokens: 25000                 # public package default; not sent by the study-repo client
+concurrency:
+  qwen_27b: 8
+  qwen_9b: 20
+  other_models: 10
+  phase_09: 8
+  override_flag: --concurrency
+batching:
+  phase_04_batch_size: 10
+  phase_05_relabel_batch_size: 25
+  phase_00_texts_per_seed: 200
+  phase_00_seeds: [42, 123, 456, 789, 2024, 4096]
+  phase_02_texts_per_seed: 200
+  phase_02_seeds: [42, 123, 456]
+retries:
+  phases_00_03_attempts_per_call: 3
+  phases_04_09_attempts_per_batch: 4    # last 2 attempts carry a repair message
+  backoff_seconds: "1 x attempt"
+  request_timeout_seconds: 180          # 300 in phase 09
+  runner_max_phase_attempts: 3
+validation:
+  structured_output: openai beta.chat.completions.parse with Pydantic models
+  phase_04: every sample UUID exactly once; meta/category pair must exist in the taxonomy
+runner_example: >-
+  ./scripts/run_taxonomy_pipeline.sh --input data/inputs/texts.parquet
+  --run-id qwen27b_openrouter --model qwen/qwen3.5-27b --target adverse_events --resume
