@@ -1,0 +1,2156 @@
+{
+  "phase": "09_ambiguity_pruning",
+  "model": "qwen/qwen3.5-27b",
+  "input_model": "qwen/qwen3.5-27b",
+  "source_tree_model": "qwen/qwen3.5-27b",
+  "target": "adverse_events",
+  "domain_context": "Free-text entries from public clinical trial documentation.",
+  "decision_count": 19,
+  "removed_root_count": 20,
+  "removed_node_count": 19,
+  "remaining_meta_count": 6,
+  "scope_reports": [
+    {
+      "scope_id": "in_meta",
+      "scope_type": "in_meta",
+      "scope_metas": [
+        "adverse_events"
+      ],
+      "candidate_count": 20,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Stroke classification",
+          "node_ids": [
+            "N006",
+            "N008"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Hemorrhage localization",
+          "node_ids": [
+            "N014",
+            "N033",
+            "N042"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "Procedure and administration site reactions",
+          "node_ids": [
+            "N040",
+            "N047",
+            "N053"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "Pain categorization",
+          "node_ids": [
+            "N021",
+            "N050"
+          ]
+        },
+        {
+          "candidate_id": "C005",
+          "concern": "Death and mortality events",
+          "node_ids": [
+            "N006",
+            "N049"
+          ]
+        },
+        {
+          "candidate_id": "C006",
+          "concern": "Embolism and thrombosis",
+          "node_ids": [
+            "N004",
+            "N034"
+          ]
+        },
+        {
+          "candidate_id": "C007",
+          "concern": "Shock states",
+          "node_ids": [
+            "N005",
+            "N026",
+            "N049"
+          ]
+        },
+        {
+          "candidate_id": "C008",
+          "concern": "Renal and urinary tract overlap",
+          "node_ids": [
+            "N044",
+            "N055"
+          ]
+        },
+        {
+          "candidate_id": "C009",
+          "concern": "Neurological infections",
+          "node_ids": [
+            "N012",
+            "N025"
+          ]
+        },
+        {
+          "candidate_id": "C010",
+          "concern": "Allergic reactions",
+          "node_ids": [
+            "N039",
+            "N051"
+          ]
+        },
+        {
+          "candidate_id": "C011",
+          "concern": "Hematoma location",
+          "node_ids": [
+            "N033",
+            "N040"
+          ]
+        },
+        {
+          "candidate_id": "C012",
+          "concern": "Chest pain attribution",
+          "node_ids": [
+            "N006",
+            "N050"
+          ]
+        },
+        {
+          "candidate_id": "C013",
+          "concern": "Gastrointestinal vascular issues",
+          "node_ids": [
+            "N018",
+            "N004"
+          ]
+        },
+        {
+          "candidate_id": "C014",
+          "concern": "Headache classification",
+          "node_ids": [
+            "N007",
+            "N012"
+          ]
+        },
+        {
+          "candidate_id": "C015",
+          "concern": "Surgical site infection vs reaction",
+          "node_ids": [
+            "N027",
+            "N040"
+          ]
+        },
+        {
+          "candidate_id": "C016",
+          "concern": "GI infection overlap",
+          "node_ids": [
+            "N016",
+            "N029"
+          ]
+        },
+        {
+          "candidate_id": "C017",
+          "concern": "Ulcer classification",
+          "node_ids": [
+            "N016",
+            "N042"
+          ]
+        },
+        {
+          "candidate_id": "C018",
+          "concern": "Fracture and trauma",
+          "node_ids": [
+            "N020",
+            "N056"
+          ]
+        },
+        {
+          "candidate_id": "C019",
+          "concern": "Pain localization",
+          "node_ids": [
+            "N006",
+            "N015",
+            "N021",
+            "N050"
+          ]
+        },
+        {
+          "candidate_id": "C020",
+          "concern": "Device-related events",
+          "node_ids": [
+            "N004",
+            "N040",
+            "N053"
+          ]
+        }
+      ],
+      "decision_count": 2,
+      "decisions": [
+        {
+          "concern": "Procedure and administration site reactions",
+          "keep": {
+            "node_id": "N040",
+            "meta": "adverse_events",
+            "code": "skin_subcutaneous/procedure_site",
+            "path": "skin_subcutaneous > skin_subcutaneous/procedure_site",
+            "description": "Adverse events localized to injection, implant, incision, catheter, or device sites (e.g., pain, hematoma, extravasation, dehiscence)."
+          },
+          "remove": [
+            {
+              "node_id": "N047",
+              "meta": "adverse_events",
+              "code": "general_disorders/administration_site",
+              "path": "general_disorders > general_disorders/administration_site",
+              "description": "Localized reactions at treatment access points including injection, catheter, or incision sites.",
+              "subtree_removed_count": 1
+            },
+            {
+              "node_id": "N053",
+              "meta": "adverse_events",
+              "code": "other/device_procedures",
+              "path": "other > other/device_procedures",
+              "description": "Adverse events related to medical devices, implants, surgical procedures, vaccinations, or access site complications.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "GI infection overlap",
+          "keep": {
+            "node_id": "N016",
+            "meta": "adverse_events",
+            "code": "gastrointestinal/infection_inflammation",
+            "path": "gastrointestinal > gastrointestinal/infection_inflammation",
+            "description": "Inflammatory, infectious, or mucosal damage conditions (e.g., Gastritis, Colitis, Pancreatitis, Ulcers)"
+          },
+          "remove": [
+            {
+              "node_id": "N029",
+              "meta": "adverse_events",
+              "code": "infections/visceral",
+              "path": "infections > infections/visceral",
+              "description": "Localized infections of internal organs excluding skin/respiratory/bloodstream (e.g., GI tract, Genitourinary, Mastitis, Otitis).",
+              "subtree_removed_count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope_id": "cross_meta__interventions",
+      "scope_type": "cross_meta",
+      "scope_metas": [
+        "adverse_events",
+        "interventions"
+      ],
+      "candidate_count": 20,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Device and Procedure Complications",
+          "node_ids": [
+            "N053",
+            "N065"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Device and Procedure Complications",
+          "node_ids": [
+            "N053",
+            "N059"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "Administration Site Reactions",
+          "node_ids": [
+            "N047",
+            "N058"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "Catheter and Device Site Events",
+          "node_ids": [
+            "N040",
+            "N061"
+          ]
+        },
+        {
+          "candidate_id": "C005",
+          "concern": "Stent and Vascular Events",
+          "node_ids": [
+            "N004",
+            "N060"
+          ]
+        },
+        {
+          "candidate_id": "C006",
+          "concern": "Surgical Site Infections",
+          "node_ids": [
+            "N027",
+            "N068"
+          ]
+        },
+        {
+          "candidate_id": "C007",
+          "concern": "Transfusion and Fluid Reactions",
+          "node_ids": [
+            "N036",
+            "N058"
+          ]
+        },
+        {
+          "candidate_id": "C008",
+          "concern": "Respiratory Support vs Failure",
+          "node_ids": [
+            "N031",
+            "N063"
+          ]
+        },
+        {
+          "candidate_id": "C009",
+          "concern": "Procedural Hemorrhage",
+          "node_ids": [
+            "N033",
+            "N065"
+          ]
+        },
+        {
+          "candidate_id": "C010",
+          "concern": "Drug Induced Lab Abnormalities",
+          "node_ids": [
+            "N044",
+            "N058"
+          ]
+        },
+        {
+          "candidate_id": "C011",
+          "concern": "Pain vs Pharmacological Management",
+          "node_ids": [
+            "N050",
+            "N058"
+          ]
+        },
+        {
+          "candidate_id": "C012",
+          "concern": "Trauma vs Invasive Procedures",
+          "node_ids": [
+            "N056",
+            "N065"
+          ]
+        },
+        {
+          "candidate_id": "C013",
+          "concern": "Cardiovascular events vs interventions",
+          "node_ids": [
+            "N001",
+            "N067"
+          ]
+        },
+        {
+          "candidate_id": "C014",
+          "concern": "Surgical site events",
+          "node_ids": [
+            "N027",
+            "N066"
+          ]
+        },
+        {
+          "candidate_id": "C015",
+          "concern": "Infection events",
+          "node_ids": [
+            "N025",
+            "N065"
+          ]
+        },
+        {
+          "candidate_id": "C016",
+          "concern": "Pain events",
+          "node_ids": [
+            "N050",
+            "N065"
+          ]
+        },
+        {
+          "candidate_id": "C017",
+          "concern": "General disorders vs other interventions",
+          "node_ids": [
+            "N046",
+            "N072"
+          ]
+        },
+        {
+          "candidate_id": "C018",
+          "concern": "Stroke vs cardiovascular intervention",
+          "node_ids": [
+            "N008",
+            "N067"
+          ]
+        },
+        {
+          "candidate_id": "C019",
+          "concern": "Skin events vs wound care",
+          "node_ids": [
+            "N038",
+            "N064"
+          ]
+        },
+        {
+          "candidate_id": "C020",
+          "concern": "Implant-related events",
+          "node_ids": [
+            "N040",
+            "N062"
+          ]
+        }
+      ],
+      "decision_count": 0,
+      "decisions": []
+    },
+    {
+      "scope_id": "cross_meta__study_design",
+      "scope_type": "cross_meta",
+      "scope_metas": [
+        "adverse_events",
+        "study_design"
+      ],
+      "candidate_count": 23,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Administration Site Reaction vs Intervention Procedure",
+          "node_ids": [
+            "N047",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Device Complication vs Intervention Procedure",
+          "node_ids": [
+            "N053",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "Trauma Injury vs Intervention Procedure",
+          "node_ids": [
+            "N056",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "Death/Vitals vs Participant Withdrawal",
+          "node_ids": [
+            "N049",
+            "N082"
+          ]
+        },
+        {
+          "candidate_id": "C005",
+          "concern": "General Disorder vs Protocol Deviation",
+          "node_ids": [
+            "N046",
+            "N085"
+          ]
+        },
+        {
+          "candidate_id": "C006",
+          "concern": "Adverse Event vs Endpoint Definition",
+          "node_ids": [
+            "N001",
+            "N077"
+          ]
+        },
+        {
+          "candidate_id": "C007",
+          "concern": "Unspecified AE vs Unspecified Study Content",
+          "node_ids": [
+            "N057",
+            "N087"
+          ]
+        },
+        {
+          "candidate_id": "C008_T1",
+          "concern": "Administration and Injection Site Reactions",
+          "node_ids": [
+            "N047",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C008_T2",
+          "concern": "Administration and Injection Site Reactions",
+          "node_ids": [
+            "N040",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C009_T1",
+          "concern": "Device and Procedure Complications",
+          "node_ids": [
+            "N053",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C009_T2",
+          "concern": "Device and Procedure Complications",
+          "node_ids": [
+            "N040",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C010_T1",
+          "concern": "Surgical and Infection Site Events",
+          "node_ids": [
+            "N027",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C010_T2",
+          "concern": "Surgical and Infection Site Events",
+          "node_ids": [
+            "N040",
+            "N076"
+          ]
+        },
+        {
+          "candidate_id": "C011_T1",
+          "concern": "Mortality and Participant Status",
+          "node_ids": [
+            "N049",
+            "N082"
+          ]
+        },
+        {
+          "candidate_id": "C011_T2",
+          "concern": "Mortality and Participant Status",
+          "node_ids": [
+            "N006",
+            "N082"
+          ]
+        },
+        {
+          "candidate_id": "C012_T1",
+          "concern": "Protocol Deviations and Administration Errors",
+          "node_ids": [
+            "N053",
+            "N085"
+          ]
+        },
+        {
+          "candidate_id": "C012_T2",
+          "concern": "Protocol Deviations and Administration Errors",
+          "node_ids": [
+            "N040",
+            "N085"
+          ]
+        },
+        {
+          "candidate_id": "C013_T1",
+          "concern": "Stroke and Neurological Event Definitions",
+          "node_ids": [
+            "N008",
+            "N077"
+          ]
+        },
+        {
+          "candidate_id": "C013_T2",
+          "concern": "Stroke and Neurological Event Definitions",
+          "node_ids": [
+            "N006",
+            "N077"
+          ]
+        },
+        {
+          "candidate_id": "C014_T1",
+          "concern": "Pain Assessment and Reporting",
+          "node_ids": [
+            "N050",
+            "N077"
+          ]
+        },
+        {
+          "candidate_id": "C014_T2",
+          "concern": "Pain Assessment and Reporting",
+          "node_ids": [
+            "N021",
+            "N077"
+          ]
+        },
+        {
+          "candidate_id": "C015_T1",
+          "concern": "Unspecified and Miscellaneous Events",
+          "node_ids": [
+            "N057",
+            "N087",
+            "N086"
+          ]
+        },
+        {
+          "candidate_id": "C015_T2",
+          "concern": "Unspecified and Miscellaneous Events",
+          "node_ids": [
+            "N051",
+            "N087",
+            "N086"
+          ]
+        }
+      ],
+      "decision_count": 0,
+      "decisions": []
+    },
+    {
+      "scope_id": "cross_meta__conditions",
+      "scope_type": "cross_meta",
+      "scope_metas": [
+        "adverse_events",
+        "conditions"
+      ],
+      "candidate_count": 28,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Cardiovascular System Classification",
+          "node_ids": [
+            "N001",
+            "N088"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Heart Failure Event vs Condition",
+          "node_ids": [
+            "N005",
+            "N090"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "Neurological System Classification",
+          "node_ids": [
+            "N007",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "Stroke Event vs Condition",
+          "node_ids": [
+            "N008",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C005",
+          "concern": "Stroke Cardiovascular Residual vs Condition",
+          "node_ids": [
+            "N006",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C006",
+          "concern": "Arrhythmia Event vs Condition",
+          "node_ids": [
+            "N003",
+            "N093"
+          ]
+        },
+        {
+          "candidate_id": "C007",
+          "concern": "Gastrointestinal System Classification",
+          "node_ids": [
+            "N013",
+            "N103"
+          ]
+        },
+        {
+          "candidate_id": "C008",
+          "concern": "Infection System Classification",
+          "node_ids": [
+            "N025",
+            "N100"
+          ]
+        },
+        {
+          "candidate_id": "C009",
+          "concern": "Sepsis Event vs Condition",
+          "node_ids": [
+            "N026",
+            "N100"
+          ]
+        },
+        {
+          "candidate_id": "C010",
+          "concern": "Respiratory System Classification",
+          "node_ids": [
+            "N031",
+            "N104"
+          ]
+        },
+        {
+          "candidate_id": "C011",
+          "concern": "Hematologic System Classification",
+          "node_ids": [
+            "N032",
+            "N107"
+          ]
+        },
+        {
+          "candidate_id": "C012",
+          "concern": "Thromboembolism Event vs Condition",
+          "node_ids": [
+            "N034",
+            "N093"
+          ]
+        },
+        {
+          "candidate_id": "C013",
+          "concern": "Skin System Classification",
+          "node_ids": [
+            "N038",
+            "N109"
+          ]
+        },
+        {
+          "candidate_id": "C014",
+          "concern": "Renal Failure Event vs Condition",
+          "node_ids": [
+            "N044",
+            "N108"
+          ]
+        },
+        {
+          "candidate_id": "C015",
+          "concern": "Metabolic Event vs Condition",
+          "node_ids": [
+            "N044",
+            "N106"
+          ]
+        },
+        {
+          "candidate_id": "C016",
+          "concern": "Neoplasm Event vs Condition",
+          "node_ids": [
+            "N045",
+            "N094"
+          ]
+        },
+        {
+          "candidate_id": "C017",
+          "concern": "Genitourinary Event vs Condition",
+          "node_ids": [
+            "N055",
+            "N108"
+          ]
+        },
+        {
+          "candidate_id": "C018",
+          "concern": "Musculoskeletal System Classification",
+          "node_ids": [
+            "N019",
+            "N105"
+          ]
+        },
+        {
+          "candidate_id": "C019",
+          "concern": "Psychiatric/Cognitive Event vs Condition",
+          "node_ids": [
+            "N011",
+            "N102"
+          ]
+        },
+        {
+          "candidate_id": "C020_T1",
+          "concern": "Stroke/Cerebrovascular",
+          "node_ids": [
+            "N006",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C020_T2",
+          "concern": "Stroke/Cerebrovascular",
+          "node_ids": [
+            "N008",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C021",
+          "concern": "Ischemia/Infarction",
+          "node_ids": [
+            "N002",
+            "N089"
+          ]
+        },
+        {
+          "candidate_id": "C022",
+          "concern": "Seizure",
+          "node_ids": [
+            "N009",
+            "N101"
+          ]
+        },
+        {
+          "candidate_id": "C023",
+          "concern": "Pneumonia",
+          "node_ids": [
+            "N028",
+            "N100"
+          ]
+        },
+        {
+          "candidate_id": "C024",
+          "concern": "Musculoskeletal Pain",
+          "node_ids": [
+            "N021",
+            "N105"
+          ]
+        },
+        {
+          "candidate_id": "C025_T1",
+          "concern": "Hemorrhage",
+          "node_ids": [
+            "N014",
+            "N107"
+          ]
+        },
+        {
+          "candidate_id": "C025_T2",
+          "concern": "Hemorrhage",
+          "node_ids": [
+            "N033",
+            "N107"
+          ]
+        },
+        {
+          "candidate_id": "C026",
+          "concern": "General/Other",
+          "node_ids": [
+            "N046",
+            "N110"
+          ]
+        }
+      ],
+      "decision_count": 10,
+      "decisions": [
+        {
+          "concern": "Cardiovascular System Classification",
+          "keep": {
+            "node_id": "N001",
+            "meta": "adverse_events",
+            "code": "cardiovascular",
+            "path": "cardiovascular",
+            "description": "New onset or trial-related events affecting the heart, blood vessels, and circulation (e.g., Myocardial Infarction, Arrhythmia, Heart Failure). Excludes baseline cardiovascular conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N088",
+              "meta": "conditions",
+              "code": "cardiovascular",
+              "path": "cardiovascular",
+              "description": "Baseline conditions affecting the heart, blood vessels, and circulation (e.g., CAD, MI, hypertension). Excludes new onset events.",
+              "subtree_removed_count": 6
+            }
+          ]
+        },
+        {
+          "concern": "Neurological System Classification",
+          "keep": {
+            "node_id": "N007",
+            "meta": "adverse_events",
+            "code": "neurological",
+            "path": "neurological",
+            "description": "New onset or trial-related events affecting the brain, spinal cord, nerves, and mental health (e.g., Stroke, Headache, Seizure). Excludes baseline neurological conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N101",
+              "meta": "conditions",
+              "code": "neurological",
+              "path": "neurological",
+              "description": "Baseline conditions affecting the nervous system (e.g., Stroke, Neuralgia, Seizure). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Gastrointestinal System Classification",
+          "keep": {
+            "node_id": "N013",
+            "meta": "adverse_events",
+            "code": "gastrointestinal",
+            "path": "gastrointestinal",
+            "description": "New onset or trial-related events affecting the digestive system, liver, and biliary tract (e.g., Nausea, Vomiting, Diarrhea, Ulcer). Excludes baseline GI conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N103",
+              "meta": "conditions",
+              "code": "gastrointestinal",
+              "path": "gastrointestinal",
+              "description": "Baseline conditions affecting the digestive tract and associated organs (e.g., Liver, Pancreas, Cirrhosis). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Sepsis Event vs Condition",
+          "keep": {
+            "node_id": "N026",
+            "meta": "adverse_events",
+            "code": "infections/bloodstream",
+            "path": "infections > infections/bloodstream",
+            "description": "Systemic infections involving the blood or resulting in septic shock (e.g., Sepsis, Bacteremia, Candidemia)."
+          },
+          "remove": [
+            {
+              "node_id": "N100",
+              "meta": "conditions",
+              "code": "infectious",
+              "path": "infectious",
+              "description": "Baseline conditions caused by pathogenic organisms (e.g., Sepsis, Pneumonia). Excludes new onset infections.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Respiratory System Classification",
+          "keep": {
+            "node_id": "N031",
+            "meta": "adverse_events",
+            "code": "respiratory",
+            "path": "respiratory",
+            "description": "New onset or trial-related events affecting the lungs, airways, and breathing (e.g., Respiratory Failure, Dyspnea). Excludes baseline respiratory conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N104",
+              "meta": "conditions",
+              "code": "respiratory",
+              "path": "respiratory",
+              "description": "Baseline conditions affecting the lungs and airways (e.g., COPD, Asthma). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Hematologic System Classification",
+          "keep": {
+            "node_id": "N032",
+            "meta": "adverse_events",
+            "code": "hematologic",
+            "path": "hematologic",
+            "description": "New onset events related to blood disorders, coagulation, and blood counts (e.g., Hemorrhage, Thrombocytopenia). Excludes baseline hematologic conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N107",
+              "meta": "conditions",
+              "code": "hematologic",
+              "path": "hematologic",
+              "description": "Baseline conditions affecting blood and blood-forming organs (e.g., Anemia, Coagulation disorders). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Skin System Classification",
+          "keep": {
+            "node_id": "N038",
+            "meta": "adverse_events",
+            "code": "skin_subcutaneous",
+            "path": "skin_subcutaneous",
+            "description": "New onset or trial-related events affecting the skin and underlying tissue (e.g., Rash, Hematoma). Excludes baseline dermatological conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N109",
+              "meta": "conditions",
+              "code": "dermatological",
+              "path": "dermatological",
+              "description": "Baseline conditions of the skin and subcutaneous tissue (e.g., Rashes, Cysts). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Psychiatric/Cognitive Event vs Condition",
+          "keep": {
+            "node_id": "N011",
+            "meta": "adverse_events",
+            "code": "neurological/cognitive_psych",
+            "path": "neurological > neurological/cognitive_psych",
+            "description": "Alterations in consciousness, cognition, mood, or behavior (e.g., Delirium, Depression, Encephalopathy, Psychomotor)."
+          },
+          "remove": [
+            {
+              "node_id": "N102",
+              "meta": "conditions",
+              "code": "psychiatric",
+              "path": "psychiatric",
+              "description": "Baseline mental and behavioral health conditions (e.g., Depression, Anxiety). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Stroke/Cerebrovascular",
+          "keep": {
+            "node_id": "N006",
+            "meta": "adverse_events",
+            "code": "cardiovascular/unspecified",
+            "path": "cardiovascular > cardiovascular/unspecified",
+            "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+          },
+          "remove": [
+            {
+              "node_id": "N101",
+              "meta": "conditions",
+              "code": "neurological",
+              "path": "neurological",
+              "description": "Baseline conditions affecting the nervous system (e.g., Stroke, Neuralgia, Seizure). Excludes new onset events.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Pneumonia",
+          "keep": {
+            "node_id": "N028",
+            "meta": "adverse_events",
+            "code": "infections/respiratory",
+            "path": "infections > infections/respiratory",
+            "description": "Infections affecting the upper or lower respiratory tract and ENT structures (e.g., Pneumonia, Influenza, URI)."
+          },
+          "remove": [
+            {
+              "node_id": "N100",
+              "meta": "conditions",
+              "code": "infectious",
+              "path": "infectious",
+              "description": "Baseline conditions caused by pathogenic organisms (e.g., Sepsis, Pneumonia). Excludes new onset infections.",
+              "subtree_removed_count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope_id": "cross_meta__outcomes",
+      "scope_type": "cross_meta",
+      "scope_metas": [
+        "adverse_events",
+        "outcomes"
+      ],
+      "candidate_count": 38,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Death and Mortality Events",
+          "node_ids": [
+            "N049",
+            "N112"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Death in Cardiovascular Context",
+          "node_ids": [
+            "N006",
+            "N112"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "Myocardial Infarction and Ischemia",
+          "node_ids": [
+            "N002",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "Stroke and Cerebrovascular Events",
+          "node_ids": [
+            "N008",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C005",
+          "concern": "Stroke in Cardiovascular Context",
+          "node_ids": [
+            "N006",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C006",
+          "concern": "Injection and Administration Site Reactions",
+          "node_ids": [
+            "N047",
+            "N126"
+          ]
+        },
+        {
+          "candidate_id": "C007",
+          "concern": "Skin and Procedure Site Complications",
+          "node_ids": [
+            "N040",
+            "N126"
+          ]
+        },
+        {
+          "candidate_id": "C008",
+          "concern": "Device and Implant Adverse Events",
+          "node_ids": [
+            "N053",
+            "N126"
+          ]
+        },
+        {
+          "candidate_id": "C009",
+          "concern": "Laboratory Values and Metabolic Findings",
+          "node_ids": [
+            "N044",
+            "N119"
+          ]
+        },
+        {
+          "candidate_id": "C010",
+          "concern": "Generalized Pain and Discomfort",
+          "node_ids": [
+            "N050",
+            "N124"
+          ]
+        },
+        {
+          "candidate_id": "C011",
+          "concern": "Musculoskeletal Pain Symptoms",
+          "node_ids": [
+            "N021",
+            "N124"
+          ]
+        },
+        {
+          "candidate_id": "C012",
+          "concern": "Safety Outcomes and Adverse Event Incidence",
+          "node_ids": [
+            "N046",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C013",
+          "concern": "Composite Cardiovascular Endpoints (MACE)",
+          "node_ids": [
+            "N001",
+            "N113"
+          ]
+        },
+        {
+          "candidate_id": "C014",
+          "concern": "Infections as Clinical Events",
+          "node_ids": [
+            "N025",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C015",
+          "concern": "Hemodynamic and Vital Sign Disturbances",
+          "node_ids": [
+            "N005",
+            "N121"
+          ]
+        },
+        {
+          "candidate_id": "C016_T1",
+          "concern": "Stroke / Cerebrovascular Events",
+          "node_ids": [
+            "N006",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C016_T2",
+          "concern": "Stroke / Cerebrovascular Events",
+          "node_ids": [
+            "N008",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C017_T1",
+          "concern": "Myocardial Infarction / Ischemia",
+          "node_ids": [
+            "N001",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C017_T2",
+          "concern": "Myocardial Infarction / Ischemia",
+          "node_ids": [
+            "N002",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C018_T1",
+          "concern": "Death / Mortality",
+          "node_ids": [
+            "N006",
+            "N112"
+          ]
+        },
+        {
+          "candidate_id": "C018_T2",
+          "concern": "Death / Mortality",
+          "node_ids": [
+            "N049",
+            "N112"
+          ]
+        },
+        {
+          "candidate_id": "C019_T1",
+          "concern": "Pain / Discomfort",
+          "node_ids": [
+            "N021",
+            "N124"
+          ]
+        },
+        {
+          "candidate_id": "C019_T2",
+          "concern": "Pain / Discomfort",
+          "node_ids": [
+            "N050",
+            "N124"
+          ]
+        },
+        {
+          "candidate_id": "C020_T1",
+          "concern": "Administration / Procedure Site",
+          "node_ids": [
+            "N040",
+            "N126"
+          ]
+        },
+        {
+          "candidate_id": "C020_T2",
+          "concern": "Administration / Procedure Site",
+          "node_ids": [
+            "N047",
+            "N126"
+          ]
+        },
+        {
+          "candidate_id": "C021_T1",
+          "concern": "Sepsis / Infection",
+          "node_ids": [
+            "N025",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C021_T2",
+          "concern": "Sepsis / Infection",
+          "node_ids": [
+            "N026",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C022",
+          "concern": "Systemic Symptoms / Fatigue",
+          "node_ids": [
+            "N048",
+            "N124"
+          ]
+        },
+        {
+          "candidate_id": "C023",
+          "concern": "Adverse Event Incidence / Safety",
+          "node_ids": [
+            "N001",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C024",
+          "concern": "Trauma / Injury",
+          "node_ids": [
+            "N056",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C025",
+          "concern": "Vascular Intervention / Revascularization",
+          "node_ids": [
+            "N004",
+            "N114"
+          ]
+        },
+        {
+          "candidate_id": "C026",
+          "concern": "Hematologic / Blood Counts",
+          "node_ids": [
+            "N032",
+            "N119"
+          ]
+        },
+        {
+          "candidate_id": "C027_T1",
+          "concern": "Shock / Hemodynamic Status",
+          "node_ids": [
+            "N005",
+            "N121"
+          ]
+        },
+        {
+          "candidate_id": "C027_T2",
+          "concern": "Shock / Hemodynamic Status",
+          "node_ids": [
+            "N049",
+            "N121"
+          ]
+        },
+        {
+          "candidate_id": "C028_T1",
+          "concern": "Allergic Reactions / Hypersensitivity",
+          "node_ids": [
+            "N039",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C028_T2",
+          "concern": "Allergic Reactions / Hypersensitivity",
+          "node_ids": [
+            "N051",
+            "N117"
+          ]
+        },
+        {
+          "candidate_id": "C029",
+          "concern": "Respiratory Status / Failure",
+          "node_ids": [
+            "N031",
+            "N121"
+          ]
+        },
+        {
+          "candidate_id": "C030",
+          "concern": "Structural / Imaging Findings",
+          "node_ids": [
+            "N017",
+            "N120"
+          ]
+        }
+      ],
+      "decision_count": 8,
+      "decisions": [
+        {
+          "concern": "Death and Mortality Events",
+          "keep": {
+            "node_id": "N049",
+            "meta": "adverse_events",
+            "code": "general_disorders/vitals",
+            "path": "general_disorders > general_disorders/vitals",
+            "description": "Critical life-status events including mortality, late death, and shock states."
+          },
+          "remove": [
+            {
+              "node_id": "N112",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/mortality_survival",
+              "path": "clinical_endpoints > clinical_endpoints/mortality_survival",
+              "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Death in Cardiovascular Context",
+          "keep": {
+            "node_id": "N006",
+            "meta": "adverse_events",
+            "code": "cardiovascular/unspecified",
+            "path": "cardiovascular > cardiovascular/unspecified",
+            "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+          },
+          "remove": [
+            {
+              "node_id": "N112",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/mortality_survival",
+              "path": "clinical_endpoints > clinical_endpoints/mortality_survival",
+              "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Stroke and Cerebrovascular Events",
+          "keep": {
+            "node_id": "N008",
+            "meta": "adverse_events",
+            "code": "neurological/cerebrovascular",
+            "path": "neurological > neurological/cerebrovascular",
+            "description": "Events involving blood flow disruption or vascular injury to the brain (e.g., Stroke, TIA, Infarction)."
+          },
+          "remove": [
+            {
+              "node_id": "N114",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/discrete_clinical_events",
+              "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+              "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Laboratory Values and Metabolic Findings",
+          "keep": {
+            "node_id": "N044",
+            "meta": "adverse_events",
+            "code": "metabolic_renal",
+            "path": "metabolic_renal",
+            "description": "New onset or trial-related events related to metabolism, electrolytes, kidney function, and abnormal laboratory findings (e.g., Renal Failure, Elevated Enzymes). Excludes baseline metabolic conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N119",
+              "meta": "outcomes",
+              "code": "quantitative_measure/laboratory_values",
+              "path": "quantitative_measure > quantitative_measure/laboratory_values",
+              "description": "Biochemical, hematological, and molecular analytes measured via lab assays.",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Stroke / Cerebrovascular Events",
+          "keep": {
+            "node_id": "N006",
+            "meta": "adverse_events",
+            "code": "cardiovascular/unspecified",
+            "path": "cardiovascular > cardiovascular/unspecified",
+            "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+          },
+          "remove": [
+            {
+              "node_id": "N114",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/discrete_clinical_events",
+              "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+              "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Myocardial Infarction / Ischemia",
+          "keep": {
+            "node_id": "N001",
+            "meta": "adverse_events",
+            "code": "cardiovascular",
+            "path": "cardiovascular",
+            "description": "New onset or trial-related events affecting the heart, blood vessels, and circulation (e.g., Myocardial Infarction, Arrhythmia, Heart Failure). Excludes baseline cardiovascular conditions."
+          },
+          "remove": [
+            {
+              "node_id": "N114",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/discrete_clinical_events",
+              "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+              "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Myocardial Infarction / Ischemia",
+          "keep": {
+            "node_id": "N002",
+            "meta": "adverse_events",
+            "code": "cardiovascular/ischemia_infarction",
+            "path": "cardiovascular > cardiovascular/ischemia_infarction",
+            "description": "Events involving coronary blood flow reduction or heart muscle death (e.g., MI, Ischemia, Angina, Occlusion)."
+          },
+          "remove": [
+            {
+              "node_id": "N114",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/discrete_clinical_events",
+              "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+              "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+              "subtree_removed_count": 1
+            }
+          ]
+        },
+        {
+          "concern": "Death and Mortality Events",
+          "keep": {
+            "node_id": "N049",
+            "meta": "adverse_events",
+            "code": "general_disorders/vitals",
+            "path": "general_disorders > general_disorders/vitals",
+            "description": "Critical life-status events including mortality, late death, and shock states."
+          },
+          "remove": [
+            {
+              "node_id": "N112",
+              "meta": "outcomes",
+              "code": "clinical_endpoints/mortality_survival",
+              "path": "clinical_endpoints > clinical_endpoints/mortality_survival",
+              "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+              "subtree_removed_count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope_id": "cross_meta__other",
+      "scope_type": "cross_meta",
+      "scope_metas": [
+        "adverse_events",
+        "other"
+      ],
+      "candidate_count": 28,
+      "candidates": [
+        {
+          "candidate_id": "C001",
+          "concern": "Other category naming conflict",
+          "node_ids": [
+            "N052",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C002",
+          "concern": "Unspecified vs Catch-all ambiguity",
+          "node_ids": [
+            "N057",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C003",
+          "concern": "General unspecified vs Catch-all",
+          "node_ids": [
+            "N051",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C004",
+          "concern": "General disorders vs Unclassifiable",
+          "node_ids": [
+            "N046",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C005_T1",
+          "concern": "Other/Unclassifiable Category",
+          "node_ids": [
+            "N052",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C005_T2",
+          "concern": "Other/Unclassifiable Category",
+          "node_ids": [
+            "N057",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T1",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N006",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T2",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N012",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T3",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N018",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T4",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N024",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T5",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N030",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T6",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N037",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T7",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N043",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C006_T8",
+          "concern": "System Unspecified/Residual Buckets",
+          "node_ids": [
+            "N051",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C007_T1",
+          "concern": "Device/Procedure/Access Site",
+          "node_ids": [
+            "N040",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C007_T2",
+          "concern": "Device/Procedure/Access Site",
+          "node_ids": [
+            "N047",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C007_T3",
+          "concern": "Device/Procedure/Access Site",
+          "node_ids": [
+            "N053",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C008_T1",
+          "concern": "Pain",
+          "node_ids": [
+            "N021",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C008_T2",
+          "concern": "Pain",
+          "node_ids": [
+            "N050",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C008_T3",
+          "concern": "Pain",
+          "node_ids": [
+            "N040",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C009_T1",
+          "concern": "Hemorrhage/Bleeding",
+          "node_ids": [
+            "N014",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C009_T2",
+          "concern": "Hemorrhage/Bleeding",
+          "node_ids": [
+            "N033",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C009_T3",
+          "concern": "Hemorrhage/Bleeding",
+          "node_ids": [
+            "N042",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C010_T1",
+          "concern": "Infection",
+          "node_ids": [
+            "N016",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C010_T2",
+          "concern": "Infection",
+          "node_ids": [
+            "N025",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C010_T3",
+          "concern": "Infection",
+          "node_ids": [
+            "N029",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C011_T1",
+          "concern": "Death/Vital Status",
+          "node_ids": [
+            "N006",
+            "N129"
+          ]
+        },
+        {
+          "candidate_id": "C011_T2",
+          "concern": "Death/Vital Status",
+          "node_ids": [
+            "N049",
+            "N129"
+          ]
+        }
+      ],
+      "decision_count": 0,
+      "decisions": []
+    }
+  ],
+  "decisions": [
+    {
+      "concern": "Procedure and administration site reactions",
+      "keep": {
+        "node_id": "N040",
+        "meta": "adverse_events",
+        "code": "skin_subcutaneous/procedure_site",
+        "path": "skin_subcutaneous > skin_subcutaneous/procedure_site",
+        "description": "Adverse events localized to injection, implant, incision, catheter, or device sites (e.g., pain, hematoma, extravasation, dehiscence)."
+      },
+      "remove": [
+        {
+          "node_id": "N047",
+          "meta": "adverse_events",
+          "code": "general_disorders/administration_site",
+          "path": "general_disorders > general_disorders/administration_site",
+          "description": "Localized reactions at treatment access points including injection, catheter, or incision sites.",
+          "subtree_removed_count": 1
+        },
+        {
+          "node_id": "N053",
+          "meta": "adverse_events",
+          "code": "other/device_procedures",
+          "path": "other > other/device_procedures",
+          "description": "Adverse events related to medical devices, implants, surgical procedures, vaccinations, or access site complications.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "GI infection overlap",
+      "keep": {
+        "node_id": "N016",
+        "meta": "adverse_events",
+        "code": "gastrointestinal/infection_inflammation",
+        "path": "gastrointestinal > gastrointestinal/infection_inflammation",
+        "description": "Inflammatory, infectious, or mucosal damage conditions (e.g., Gastritis, Colitis, Pancreatitis, Ulcers)"
+      },
+      "remove": [
+        {
+          "node_id": "N029",
+          "meta": "adverse_events",
+          "code": "infections/visceral",
+          "path": "infections > infections/visceral",
+          "description": "Localized infections of internal organs excluding skin/respiratory/bloodstream (e.g., GI tract, Genitourinary, Mastitis, Otitis).",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Cardiovascular System Classification",
+      "keep": {
+        "node_id": "N001",
+        "meta": "adverse_events",
+        "code": "cardiovascular",
+        "path": "cardiovascular",
+        "description": "New onset or trial-related events affecting the heart, blood vessels, and circulation (e.g., Myocardial Infarction, Arrhythmia, Heart Failure). Excludes baseline cardiovascular conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N088",
+          "meta": "conditions",
+          "code": "cardiovascular",
+          "path": "cardiovascular",
+          "description": "Baseline conditions affecting the heart, blood vessels, and circulation (e.g., CAD, MI, hypertension). Excludes new onset events.",
+          "subtree_removed_count": 6
+        }
+      ]
+    },
+    {
+      "concern": "Neurological System Classification",
+      "keep": {
+        "node_id": "N007",
+        "meta": "adverse_events",
+        "code": "neurological",
+        "path": "neurological",
+        "description": "New onset or trial-related events affecting the brain, spinal cord, nerves, and mental health (e.g., Stroke, Headache, Seizure). Excludes baseline neurological conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N101",
+          "meta": "conditions",
+          "code": "neurological",
+          "path": "neurological",
+          "description": "Baseline conditions affecting the nervous system (e.g., Stroke, Neuralgia, Seizure). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Gastrointestinal System Classification",
+      "keep": {
+        "node_id": "N013",
+        "meta": "adverse_events",
+        "code": "gastrointestinal",
+        "path": "gastrointestinal",
+        "description": "New onset or trial-related events affecting the digestive system, liver, and biliary tract (e.g., Nausea, Vomiting, Diarrhea, Ulcer). Excludes baseline GI conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N103",
+          "meta": "conditions",
+          "code": "gastrointestinal",
+          "path": "gastrointestinal",
+          "description": "Baseline conditions affecting the digestive tract and associated organs (e.g., Liver, Pancreas, Cirrhosis). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Sepsis Event vs Condition",
+      "keep": {
+        "node_id": "N026",
+        "meta": "adverse_events",
+        "code": "infections/bloodstream",
+        "path": "infections > infections/bloodstream",
+        "description": "Systemic infections involving the blood or resulting in septic shock (e.g., Sepsis, Bacteremia, Candidemia)."
+      },
+      "remove": [
+        {
+          "node_id": "N100",
+          "meta": "conditions",
+          "code": "infectious",
+          "path": "infectious",
+          "description": "Baseline conditions caused by pathogenic organisms (e.g., Sepsis, Pneumonia). Excludes new onset infections.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Respiratory System Classification",
+      "keep": {
+        "node_id": "N031",
+        "meta": "adverse_events",
+        "code": "respiratory",
+        "path": "respiratory",
+        "description": "New onset or trial-related events affecting the lungs, airways, and breathing (e.g., Respiratory Failure, Dyspnea). Excludes baseline respiratory conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N104",
+          "meta": "conditions",
+          "code": "respiratory",
+          "path": "respiratory",
+          "description": "Baseline conditions affecting the lungs and airways (e.g., COPD, Asthma). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Hematologic System Classification",
+      "keep": {
+        "node_id": "N032",
+        "meta": "adverse_events",
+        "code": "hematologic",
+        "path": "hematologic",
+        "description": "New onset events related to blood disorders, coagulation, and blood counts (e.g., Hemorrhage, Thrombocytopenia). Excludes baseline hematologic conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N107",
+          "meta": "conditions",
+          "code": "hematologic",
+          "path": "hematologic",
+          "description": "Baseline conditions affecting blood and blood-forming organs (e.g., Anemia, Coagulation disorders). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Skin System Classification",
+      "keep": {
+        "node_id": "N038",
+        "meta": "adverse_events",
+        "code": "skin_subcutaneous",
+        "path": "skin_subcutaneous",
+        "description": "New onset or trial-related events affecting the skin and underlying tissue (e.g., Rash, Hematoma). Excludes baseline dermatological conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N109",
+          "meta": "conditions",
+          "code": "dermatological",
+          "path": "dermatological",
+          "description": "Baseline conditions of the skin and subcutaneous tissue (e.g., Rashes, Cysts). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Psychiatric/Cognitive Event vs Condition",
+      "keep": {
+        "node_id": "N011",
+        "meta": "adverse_events",
+        "code": "neurological/cognitive_psych",
+        "path": "neurological > neurological/cognitive_psych",
+        "description": "Alterations in consciousness, cognition, mood, or behavior (e.g., Delirium, Depression, Encephalopathy, Psychomotor)."
+      },
+      "remove": [
+        {
+          "node_id": "N102",
+          "meta": "conditions",
+          "code": "psychiatric",
+          "path": "psychiatric",
+          "description": "Baseline mental and behavioral health conditions (e.g., Depression, Anxiety). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Stroke/Cerebrovascular",
+      "keep": {
+        "node_id": "N006",
+        "meta": "adverse_events",
+        "code": "cardiovascular/unspecified",
+        "path": "cardiovascular > cardiovascular/unspecified",
+        "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+      },
+      "remove": [
+        {
+          "node_id": "N101",
+          "meta": "conditions",
+          "code": "neurological",
+          "path": "neurological",
+          "description": "Baseline conditions affecting the nervous system (e.g., Stroke, Neuralgia, Seizure). Excludes new onset events.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Pneumonia",
+      "keep": {
+        "node_id": "N028",
+        "meta": "adverse_events",
+        "code": "infections/respiratory",
+        "path": "infections > infections/respiratory",
+        "description": "Infections affecting the upper or lower respiratory tract and ENT structures (e.g., Pneumonia, Influenza, URI)."
+      },
+      "remove": [
+        {
+          "node_id": "N100",
+          "meta": "conditions",
+          "code": "infectious",
+          "path": "infectious",
+          "description": "Baseline conditions caused by pathogenic organisms (e.g., Sepsis, Pneumonia). Excludes new onset infections.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Death and Mortality Events",
+      "keep": {
+        "node_id": "N049",
+        "meta": "adverse_events",
+        "code": "general_disorders/vitals",
+        "path": "general_disorders > general_disorders/vitals",
+        "description": "Critical life-status events including mortality, late death, and shock states."
+      },
+      "remove": [
+        {
+          "node_id": "N112",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/mortality_survival",
+          "path": "clinical_endpoints > clinical_endpoints/mortality_survival",
+          "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Death in Cardiovascular Context",
+      "keep": {
+        "node_id": "N006",
+        "meta": "adverse_events",
+        "code": "cardiovascular/unspecified",
+        "path": "cardiovascular > cardiovascular/unspecified",
+        "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+      },
+      "remove": [
+        {
+          "node_id": "N112",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/mortality_survival",
+          "path": "clinical_endpoints > clinical_endpoints/mortality_survival",
+          "description": "Endpoints tracking death, survival rates, time-to-death, or life expectancy.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Stroke and Cerebrovascular Events",
+      "keep": {
+        "node_id": "N008",
+        "meta": "adverse_events",
+        "code": "neurological/cerebrovascular",
+        "path": "neurological > neurological/cerebrovascular",
+        "description": "Events involving blood flow disruption or vascular injury to the brain (e.g., Stroke, TIA, Infarction)."
+      },
+      "remove": [
+        {
+          "node_id": "N114",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/discrete_clinical_events",
+          "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+          "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Laboratory Values and Metabolic Findings",
+      "keep": {
+        "node_id": "N044",
+        "meta": "adverse_events",
+        "code": "metabolic_renal",
+        "path": "metabolic_renal",
+        "description": "New onset or trial-related events related to metabolism, electrolytes, kidney function, and abnormal laboratory findings (e.g., Renal Failure, Elevated Enzymes). Excludes baseline metabolic conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N119",
+          "meta": "outcomes",
+          "code": "quantitative_measure/laboratory_values",
+          "path": "quantitative_measure > quantitative_measure/laboratory_values",
+          "description": "Biochemical, hematological, and molecular analytes measured via lab assays.",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Stroke / Cerebrovascular Events",
+      "keep": {
+        "node_id": "N006",
+        "meta": "adverse_events",
+        "code": "cardiovascular/unspecified",
+        "path": "cardiovascular > cardiovascular/unspecified",
+        "description": "Residual cardiovascular events not captured above (e.g., Pericarditis, Chest Pain, Death, Stroke)."
+      },
+      "remove": [
+        {
+          "node_id": "N114",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/discrete_clinical_events",
+          "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+          "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Myocardial Infarction / Ischemia",
+      "keep": {
+        "node_id": "N001",
+        "meta": "adverse_events",
+        "code": "cardiovascular",
+        "path": "cardiovascular",
+        "description": "New onset or trial-related events affecting the heart, blood vessels, and circulation (e.g., Myocardial Infarction, Arrhythmia, Heart Failure). Excludes baseline cardiovascular conditions."
+      },
+      "remove": [
+        {
+          "node_id": "N114",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/discrete_clinical_events",
+          "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+          "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+          "subtree_removed_count": 1
+        }
+      ]
+    },
+    {
+      "concern": "Myocardial Infarction / Ischemia",
+      "keep": {
+        "node_id": "N002",
+        "meta": "adverse_events",
+        "code": "cardiovascular/ischemia_infarction",
+        "path": "cardiovascular > cardiovascular/ischemia_infarction",
+        "description": "Events involving coronary blood flow reduction or heart muscle death (e.g., MI, Ischemia, Angina, Occlusion)."
+      },
+      "remove": [
+        {
+          "node_id": "N114",
+          "meta": "outcomes",
+          "code": "clinical_endpoints/discrete_clinical_events",
+          "path": "clinical_endpoints > clinical_endpoints/discrete_clinical_events",
+          "description": "Single pathological occurrences or procedural needs used as endpoints (e.g., MI, Stroke, Revascularization).",
+          "subtree_removed_count": 1
+        }
+      ]
+    }
+  ]
+}

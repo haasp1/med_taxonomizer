@@ -1,0 +1,37 @@
+# Qwen 3.5 27B on a local OpenAI-compatible server (e.g. LM Studio).
+# Taxonomy-pipeline example. The separate held-out classifier used local
+# Qwen GGUF Q8_0; see docs/qwen-configuration.md.
+# Documentation only: the pipeline does not read this file.
+endpoint:
+  type: openai_compatible_local
+  base_url: http://localhost:1234/v1   # pass as --base-url
+  api_key: lm-studio                    # placeholder sent by lib/llm_client.make_openai_client
+  extra_body:
+    provider: null                      # no ZDR/provider block on local calls
+  http_timeout: none
+models:
+  taxonomy: unsloth/qwen3.5-27b
+  labeling: unsloth/qwen3.5-27b         # set --labeling-model explicitly for local runs
+  quantisation: not specified by this example
+  hardware: not specified by this example
+  server_version: not specified by this example
+  context_length: not specified by this example
+sampling:
+  # Same client-side values as the hosted configuration; the server may
+  # override them. reasoning is not sent locally.
+  phases_00_03: {temperature: 0.6}
+  phase_04_labeling: {temperature: 0.6, top_p: 0.95, top_k: 20, presence_penalty: 1.5}
+  phase_05_review_other: {temperature: 0.6, top_p: 0.95, top_k: 20, presence_penalty: 1.5}
+  phases_06_08: {temperature: 0.8, top_p: 0.95, top_k: 20, presence_penalty: 1.5}
+  phase_09_ambiguity_pruning: {temperature: 0.6}
+concurrency:
+  default: 1
+  override_flag: --concurrency
+structured_output:
+  method: JSON schema appended to the prompt; first valid JSON object extracted after removing <think> blocks
+  attempts_per_call: 3
+runner_example: >-
+  ./scripts/run_taxonomy_pipeline.sh --input data/inputs/texts.parquet
+  --run-id qwen27b_local --base-url http://localhost:1234/v1
+  --model unsloth/qwen3.5-27b --labeling-model unsloth/qwen3.5-27b
+  --target adverse_events --resume

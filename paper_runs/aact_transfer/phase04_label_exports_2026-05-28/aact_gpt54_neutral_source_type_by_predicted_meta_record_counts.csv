@@ -1,0 +1,6 @@
+source_type,n_source_records,adverse_events,conditions,interventions,other,outcomes,study_design
+adverse_event,1000,598,298,73,11,40,9
+condition,300,59,150,52,11,35,13
+intervention,300,5,17,275,3,23,68
+outcome,300,75,22,80,0,278,38
+study_conduct,79,6,0,12,9,13,56

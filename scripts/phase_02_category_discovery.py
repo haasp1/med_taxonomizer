@@ -34,7 +34,7 @@ PROMPTS_DIR = EXPERIMENT_DIR / "prompts"
 ARTIFACT_PATHS = resolve_experiment_artifact_paths(EXPERIMENT_DIR)
 DATA_DIR = ARTIFACT_PATHS.data_dir
 INTERMEDIATE_DIR = ARTIFACT_PATHS.intermediate_dir
-INPUT_DATA = Path("experiments/01_data_preparation/data/texts_sufficient_only.parquet")
+INPUT_DATA = Path("data/inputs/texts.parquet")
 
 DEFAULT_MODEL = "openai/gpt-5.2"
 DEFAULT_N_SAMPLES = 200
@@ -144,6 +144,7 @@ def get_run_path(output_dir: Path, meta_code: str, seed: int, model: str) -> Pat
 
 async def main(
     sample_mode: bool = False,
+    input_data: Path = INPUT_DATA,
     n_samples: int = DEFAULT_N_SAMPLES,
     seeds: list[int] = None,
     domain_context: str = DEFAULT_DOMAIN_CONTEXT,
@@ -172,8 +173,10 @@ async def main(
     if isinstance(meta_categories, list) and meta_categories and isinstance(meta_categories[0], str):
         meta_categories = [{"code": m, "description": ""} for m in meta_categories]
 
-    print(f"Loading data from {INPUT_DATA}...")
-    df = pd.read_parquet(INPUT_DATA)
+    print(f"Loading data from {input_data}...")
+    df = pd.read_parquet(input_data)
+    if "text" not in df.columns:
+        raise ValueError("Input parquet must contain a 'text' column")
     print(f"Loaded {len(df)} total samples")
 
     client, local = get_client(base_url=base_url)
@@ -270,6 +273,7 @@ async def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Phase 02: Category Discovery (Ensemble)")
     parser.add_argument("--sample", action="store_true", help="Run with fewer samples and seeds")
+    parser.add_argument("--input", type=Path, default=INPUT_DATA, help="Parquet file with a text column")
     parser.add_argument("--n-samples", type=int, default=DEFAULT_N_SAMPLES, help="Number of samples")
     parser.add_argument("--seeds", type=int, nargs="+", default=DEFAULT_SEEDS, help="Random seeds")
     parser.add_argument("--domain-context", type=str, default=DEFAULT_DOMAIN_CONTEXT, help="Domain context")
@@ -283,6 +287,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     asyncio.run(main(
         sample_mode=args.sample,
+        input_data=args.input,
         n_samples=args.n_samples,
         seeds=args.seeds,
         domain_context=args.domain_context,

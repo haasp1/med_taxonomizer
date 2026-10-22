@@ -50,7 +50,7 @@ ARTIFACT_PATHS = resolve_experiment_artifact_paths(EXPERIMENT_DIR)
 DATA_DIR = ARTIFACT_PATHS.data_dir
 INTERMEDIATE_DIR = ARTIFACT_PATHS.intermediate_dir
 CACHE_DIR = ARTIFACT_PATHS.cache_dir
-INPUT_DATA = Path("experiments/01_data_preparation/data/texts_sufficient_only.parquet")
+INPUT_DATA = Path("data/inputs/texts.parquet")
 
 DEFAULT_MODEL = "openai/gpt-4o"
 DEFAULT_TAXONOMY_MODEL = "openai/gpt-5.2"
@@ -710,6 +710,7 @@ def refresh_state_from_database(conn: sqlite3.Connection, state: LabelingState) 
 
 async def main(
     sample_mode: bool = False,
+    input_data: Path = INPUT_DATA,
     batch_size: int = DEFAULT_BATCH_SIZE,
     resume: bool = False,
     rerun_missing_only: bool = False,
@@ -752,8 +753,10 @@ async def main(
     Label, SampleResult, BatchResult = create_label_models(meta_codes, categories_by_meta)
 
     # Load data
-    print(f"\nLoading data from {INPUT_DATA}...")
-    df = pd.read_parquet(INPUT_DATA)
+    print(f"\nLoading data from {input_data}...")
+    df = pd.read_parquet(input_data)
+    if "text" not in df.columns:
+        raise ValueError("Input parquet must contain a 'text' column")
     print(f"Loaded {len(df)} samples")
 
     taxonomy_hash = compute_taxonomy_hash(meta_codes, categories_by_meta)
@@ -996,7 +999,7 @@ async def main(
         if state.other_samples:
             print(f"\n'Other' samples for review: {len(state.other_samples)}")
 
-        print(f"\nResults saved to:")
+        print("\nResults saved to:")
         print(f"  JSONL: {results_file}")
         print(f"  SQLite: {db_file}")
         print(f"State saved to: {state_file}")
@@ -1008,6 +1011,7 @@ async def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Phase 04: Sample Labeling")
     parser.add_argument("--sample", action="store_true", help="Run with 10 samples for testing")
+    parser.add_argument("--input", type=Path, default=INPUT_DATA, help="Parquet file with a text column")
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Batch size")
     parser.add_argument("--resume", action="store_true", help="Resume from last state")
     parser.add_argument("--rerun-missing-only", action="store_true", help="Process only failed/missing batches from the failed-batch manifest or DB coverage gaps")
@@ -1025,6 +1029,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     asyncio.run(main(
         sample_mode=args.sample,
+        input_data=args.input,
         batch_size=args.batch_size,
         resume=args.resume,
         rerun_missing_only=args.rerun_missing_only,
